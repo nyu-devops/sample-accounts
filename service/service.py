@@ -13,7 +13,7 @@ from flask_api import status  # HTTP Status Codes
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
 from flask_sqlalchemy import SQLAlchemy
-from service.models import YourResourceModel, DataValidationError
+from service.models import Account, DataValidationError
 
 # Import Flask application
 from . import app
@@ -34,4 +34,4 @@ def index():
 def init_db():
     """ Initialies the SQLAlchemy app """
     global app
-    YourResourceModel.init_db(app)
+    Account.init_db(app)
