@@ -28,7 +28,7 @@ class Account(db.Model):
     name = db.Column(db.String(63))
     address = db.Column(db.String(128))
     email = db.Column(db.String(32))
-    phone_number = db.Column(db.String(12))
+    phone_number = db.Column(db.String(32))
 
     def __repr__(self):
         return "<Account %r id=[%s]>" % (self.name, self.id)

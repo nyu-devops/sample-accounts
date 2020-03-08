@@ -1,5 +1,5 @@
 """
-Test cases for <your resource name> Model
+Test cases for Account Model
 
 """
 import logging
@@ -13,10 +13,10 @@ DATABASE_URI = os.getenv(
 )
 
 ######################################################################
-#  <your resource name>   M O D E L   T E S T   C A S E S
+#  Account   M O D E L   T E S T   C A S E S
 ######################################################################
 class TestAccount(unittest.TestCase):
-    """ Test Cases for <your resource name> Model """
+    """ Test Cases for Account Model """
 
     @classmethod
     def setUpClass(cls):
@@ -46,6 +46,35 @@ class TestAccount(unittest.TestCase):
 #  P L A C E   T E S T   C A S E S   H E R E 
 ######################################################################
 
-    def test_XXXX(self):
-        """ Test something """
-        self.assertTrue(True)
+    def test_create_an_account(self):
+        """ Create a Account and assert that it exists """
+        account = Account(
+            name="Jim Jones", 
+            address="123 Main Street, Anytown USA", 
+            email="jjames@gmail.com", 
+            phone_number="(800) 555-1212"
+        )
+        self.assertTrue(account != None)
+        self.assertEqual(account.id, None)
+        self.assertEqual(account.name, "Jim Jones")
+        self.assertEqual(account.address, "123 Main Street, Anytown USA")
+        self.assertEqual(account.email, "jjames@gmail.com")
+        self.assertEqual(account.phone_number, "(800) 555-1212")
+
+    def test_add_a_account(self):
+        """ Create an account and add it to the database """
+        accounts = Account.all()
+        self.assertEqual(accounts, [])
+        account = Account(
+            name="Jim Jones", 
+            address="123 Main Street, Anytown USA", 
+            email="jjames@gmail.com", 
+            phone_number="(800) 555-1212"
+        )
+        self.assertTrue(account != None)
+        self.assertEqual(account.id, None)
+        account.create()
+        # Asert that it was assigned an id and shows up in the database
+        self.assertEqual(account.id, 1)
+        accounts = Account.all()
+        self.assertEqual(len(accounts), 1)
