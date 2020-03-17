@@ -208,6 +208,17 @@ def delete_accounts(account_id):
 
 
 ######################################################################
+# LIST ADDRESSES
+######################################################################
+@app.route("/accounts/<int:account_id>/addresses", methods=["GET"])
+def list_addresses(account_id):
+    """ Returns all of the Addresses for an Account """
+    app.logger.info("Request for Account Addresses...")
+    account = Account.find_or_404(account_id)
+    results = [address.serialize() for address in account.addresses]
+    return make_response(jsonify(results), status.HTTP_200_OK)
+
+######################################################################
 # ADD AN ADDRESS TO AN ACCOUNT
 ######################################################################
 @app.route('/accounts/<int:account_id>/addresses', methods=['POST'])

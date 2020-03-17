@@ -211,6 +211,39 @@ class TestYourResourceServer(TestCase):
 #  A D D R E S S   T E S T   C A S E S
 ######################################################################
 
+    def test_get_address_list(self):
+        """ Get a list of Addresses """
+        # add two addresses to account
+        account = self._create_accounts(1)[0]
+        address_list = AddressFactory.create_batch(2)
+
+        # Create address 1
+        resp = self.app.post(
+            "/accounts/{}/addresses".format(account.id), 
+            json=address_list[0].serialize(), 
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Create address 2
+        resp = self.app.post(
+            "/accounts/{}/addresses".format(account.id), 
+            json=address_list[1].serialize(), 
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # get the list back and make sure there are 2
+        resp = self.app.get(
+            "/accounts/{}/addresses".format(account.id), 
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+
+
     def test_add_address(self):
         """ Add an address to an account """
         account = self._create_accounts(1)[0]
