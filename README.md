@@ -17,13 +17,14 @@ These are the RESTful routes for `accounts` and `addresses`
 Endpoint          Methods  Rule
 ----------------  -------  -----------------------------------------------------
 index             GET      /
-list_accounts     GET      /accounts
 
+list_accounts     GET      /accounts
 create_accounts   POST     /accounts
 get_accounts      GET      /accounts/<account_id>
 update_accounts   PUT      /accounts/<account_id>
 delete_accounts   DELETE   /accounts/<account_id>
 
+list_addresses    GET      /accounts/<int:account_id>/addresses
 create_addresses  POST     /accounts/<account_id>/addresses
 get_addresses     GET      /accounts/<account_id>/addresses/<address_id>
 update_addresses  PUT      /accounts/<account_id>/addresses/<address_id>
