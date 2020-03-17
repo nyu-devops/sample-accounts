@@ -10,6 +10,7 @@ import logging
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from flask_api import status  # HTTP Status Codes
+from tests.factories import AccountFactory, AddressFactory
 from service.models import db
 from service.service import app, init_db
 
@@ -60,15 +61,10 @@ class TestYourResourceServer(TestCase):
 
     def test_create_account(self):
         """ Create a new Account """
-        test_account = {
-            "name": "Joe Jones",
-            "address": "123 Main Street",
-            "email": "jjones@gmail.com",
-            "phone_number": "800-555-1212",
-        }
+        account = AccountFactory()
         resp = self.app.post(
             "/accounts", 
-            json=test_account, 
+            json=account.serialize(), 
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
@@ -79,17 +75,18 @@ class TestYourResourceServer(TestCase):
         
         # Check the data is correct
         new_account = resp.get_json()
-        self.assertEqual(new_account["name"], test_account["name"], "Names does not match")
-        self.assertEqual(new_account["address"], test_account["address"], "Address does not match")
-        self.assertEqual(new_account["email"], test_account["email"], "Email does not match")
-        self.assertEqual(new_account["phone_number"], test_account["phone_number"], "Phone does not match")
-        
-        # TODO: When get_account is implemented uncomment below]
-        # Check that the location header was correct
-        # resp = self.app.get(location, content_type="application/json")
-        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        # new_account = resp.get_json()
-        # self.assertEqual(new_account["name"], test_account["name"], "Names does not match")
-        # self.assertEqual(new_account["address"], test_account["address"], "Address does not match")
-        # self.assertEqual(new_account["email"], test_account["email"], "Email does not match")
-        # self.assertEqual(new_account["phone_number"], test_account["phone_number"], "Phone does not match")
+        self.assertEqual(new_account["name"], account.name, "Names does not match")
+        self.assertEqual(new_account["addresses"], account.addresses, "Address does not match")
+        self.assertEqual(new_account["email"], account.email, "Email does not match")
+        self.assertEqual(new_account["phone_number"], account.phone_number, "Phone does not match")
+        self.assertEqual(new_account["date_joined"], str(account.date_joined), "Date Joined does not match")
+
+        # Check that the location header was correct by getting it
+        resp = self.app.get(location, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_account = resp.get_json()
+        self.assertEqual(new_account["name"], account.name, "Names does not match")
+        self.assertEqual(new_account["addresses"], account.addresses, "Address does not match")
+        self.assertEqual(new_account["email"], account.email, "Email does not match")
+        self.assertEqual(new_account["phone_number"], account.phone_number, "Phone does not match")
+        self.assertEqual(new_account["date_joined"], str(account.date_joined), "Date Joined does not match")

@@ -9,11 +9,12 @@ import sys
 import logging
 from flask import Flask, jsonify, request, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
+from werkzeug.exceptions import NotFound
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
 from flask_sqlalchemy import SQLAlchemy
-from service.models import Account, DataValidationError
+from service.models import Account, Address, DataValidationError
 
 # Import Flask application
 from . import app
@@ -25,6 +26,23 @@ from . import app
 def index():
     """ Root URL response """
     return "Reminder: return some useful information in json format about the service here", status.HTTP_200_OK
+
+######################################################################
+# RETRIEVE A PET
+######################################################################
+@app.route("/accounts/<int:account_id>", methods=["GET"])
+def get_accounts(account_id):
+    """
+    Retrieve a single Account
+
+    This endpoint will return an Account based on it's id
+    """
+    app.logger.info("Request for Account with id: %s", account_id)
+    account = Account.find(account_id)
+    if not account:
+        raise NotFound("Account with id '{}' was not found.".format(account_id))
+    return make_response(jsonify(account.serialize()), status.HTTP_200_OK)
+
 
 ######################################################################
 # CREATE A NEW ACCOUNT
@@ -41,11 +59,29 @@ def create_accounts():
     account.deserialize(request.get_json())
     account.create()
     message = account.serialize()
-    #location_url = url_for("get_accounts", account_id=account.id, _external=True)
-    location_url = "not implemented"
+    location_url = url_for("get_accounts", account_id=account.id, _external=True)
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
+
+######################################################################
+# ADD AN ADDRESS TO AN ACCOUNT
+######################################################################
+@app.route('/accounts/<int:account_id>/addresses', methods=['POST'])
+def add_address_to_account(account_id):
+    app.logger.info("Request to add an address to an account")
+    account = Account.find(account_id)
+    if not account:
+        abort(404, "Account not found")
+
+    address = Address()
+    address.deserialize(request.get_json())
+    account.address.append(address)
+    account.save()
+    message = address.serialize()
+    return make_response(jsonify(message), status.HTTP_201_CREATED)
+
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
