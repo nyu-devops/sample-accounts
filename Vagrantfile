@@ -63,9 +63,11 @@ Vagrant.configure(2) do |config|
     apt-get update
     apt-get install -y git python3 python3-pip python3-venv
     apt-get -y autoremove
+    # Create a Python3 Virtual Environment and Activate it in .profile
+    sudo -H -u vagrant sh -c 'python3 -m venv ~/venv'
+    sudo -H -u vagrant sh -c 'echo ". ~/venv/bin/activate" >> ~/.profile'
     # Install app dependencies
-    cd /vagrant
-    pip3 install -r requirements.txt
+    sudo -H -u vagrant sh -c '. ~/venv/bin/activate && cd /vagrant && pip install -r requirements.txt'
   SHELL
 
   ######################################################################

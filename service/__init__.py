@@ -23,6 +23,7 @@ if __name__ != '__main__':
     app.logger.setLevel(gunicorn_logger.level)
     app.logger.propagate = False
     # Make all log formats consistent
+    # format=’%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s’)
     formatter = logging.Formatter("[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s", "%Y-%m-%d %H:%M:%S %z")
     for handler in app.logger.handlers:
         handler.setFormatter(formatter)
