@@ -1,3 +1,6 @@
+# Freeze these depndencies
+Werkzeug==1.0.1
+
 # Runtime dependencies
 Flask==1.1.1
 Flask-API==1.1
