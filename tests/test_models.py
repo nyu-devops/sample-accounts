@@ -116,12 +116,12 @@ class TestAccount(unittest.TestCase):
 
         # Fetch it back
         account = Account.find(account.id)
-        account.email = "XXX@YYY.COM"
-        account.save()
+        account.email = "XYZZY@plugh.com"
+        account.update()
 
         # Fetch it back again
         account = Account.find(account.id)
-        self.assertEqual(account.email, "XXX@YYY.COM")
+        self.assertEqual(account.email, "XYZZY@plugh.com")
 
 
     def test_delete_an_account(self):
@@ -138,17 +138,6 @@ class TestAccount(unittest.TestCase):
         account.delete()
         accounts = Account.all()
         self.assertEqual(len(accounts), 0)
-
-    def test_find_or_404(self):
-        """ Find or throw 404 error """
-        account = self._create_account()
-        account.create()
-        # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
-
-        # Fetch it back
-        account = Account.find_or_404(account.id)
-        self.assertEqual(account.id, 1)
 
     def test_find_by_name(self):
         """ Find by name """
@@ -231,7 +220,7 @@ class TestAccount(unittest.TestCase):
 
         address2 = self._create_address()
         account.addresses.append(address2)
-        account.save()
+        account.update()
 
         new_account = Account.find(account.id)
         self.assertEqual(len(account.addresses), 2)
@@ -256,7 +245,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(old_address.city, address.city)
 
         old_address.city = "XX"
-        account.save()
+        account.update()
 
         # Fetch it back again
         account = Account.find(account.id)
@@ -280,7 +269,7 @@ class TestAccount(unittest.TestCase):
         account = Account.find(account.id)
         address = account.addresses[0]
         address.delete()
-        account.save()
+        account.update()
 
         # Fetch it back again
         account = Account.find(account.id)
