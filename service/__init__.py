@@ -1,43 +1,59 @@
+# Copyright 2016, 2022 John J. Rofrano. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Package: service
 Package for the application models and service routes
 This module creates and configures the Flask app and sets up the logging
 and SQL database
 """
-import os
 import sys
 import logging
 from flask import Flask
 
 # Create Flask application
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object("config")
 
-# Import the rutes After the Flask app is created
-from service import service, models
+# Import the routes After the Flask app is created
+# pylint: disable=wrong-import-position, cyclic-import
+from service import routes, models, error_handlers
 
 # Set up logging for production
-if __name__ != '__main__':
-    gunicorn_logger = logging.getLogger('gunicorn.error')
+print("Setting up logging for {}...".format(__name__))
+app.logger.propagate = False
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    app.logger.propagate = False
     # Make all log formats consistent
-    # format=’%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s’)
-    formatter = logging.Formatter("[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s", "%Y-%m-%d %H:%M:%S %z")
+    formatter = logging.Formatter(
+        "[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s", "%Y-%m-%d %H:%M:%S %z"
+    )
     for handler in app.logger.handlers:
         handler.setFormatter(formatter)
-    app.logger.info('Logging handler established')
+    app.logger.info("Logging handler established")
 
 app.logger.info(70 * "*")
 app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*"))
 app.logger.info(70 * "*")
 
 try:
-    service.init_db()  # make our sqlalchemy tables
+    routes.init_db()  # make our database tables
 except Exception as error:
     app.logger.critical("%s: Cannot continue", error)
     # gunicorn requires exit code 4 to stop spawning workers when they die
     sys.exit(4)
 
-app.logger.info("Service inititalized!")
+app.logger.info("Service initialized!")

@@ -10,7 +10,7 @@ from service.models import Account, Address, DataValidationError, db
 from tests.factories import AccountFactory, AddressFactory
 
 DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
 ######################################################################

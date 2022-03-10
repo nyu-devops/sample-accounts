@@ -9,21 +9,20 @@ import os
 import logging
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from flask_api import status  # HTTP Status Codes
 from tests.factories import AccountFactory, AddressFactory
+from service import status  # HTTP Status Codes
 from service.models import db
-from service.service import app, init_db
+from service.routes import app, init_db
 
-# DATABASE_URI = os.getenv('DATABASE_URI', 'sqlite:///../db/test.db')
 DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
-class TestYourResourceServer(TestCase):
-    """ <your resource name> Server Tests """
+class TestAccountService(TestCase):
+    """ Account Service Tests """
 
     @classmethod
     def setUpClass(cls):
