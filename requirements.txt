@@ -1,17 +1,23 @@
-# Freeze these depndencies
-Werkzeug==1.0.1
+# Dependencies
+Flask==2.0.2
+Flask-SQLAlchemy==2.5.1
+psycopg2==2.9.3
+python-dotenv==0.19.2
 
-# Runtime dependencies
-Flask==1.1.1
-Flask-API==1.1
-Flask-SQLAlchemy==2.4.1
-psycopg2-binary==2.8.3
-python-dotenv==0.10.3
+# Runtime
+gunicorn==20.1.0
+honcho>=1.0.1
+
+# Code quality
+pylint==2.9.3
+flake8==3.7.9
 
 # Testing
-nose==1.3.7
-rednose==1.3.0
-pinocchio==0.4.2
 factory-boy==2.12.0
+nose==1.3.7
+pinocchio==0.4.2
+httpie==2.3.0
+
+# Code coverage
 coverage==4.5.4
-pylint>=2.4.1
+codecov==2.1.10
