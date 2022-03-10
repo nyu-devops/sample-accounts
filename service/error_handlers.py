@@ -29,7 +29,7 @@ def request_validation_error(error):
 
 @app.errorhandler(status.HTTP_400_BAD_REQUEST)
 def bad_request(error):
-    """Handles bad reuests with 400_BAD_REQUEST"""
+    """Handles bad requests with 400_BAD_REQUEST"""
     message = str(error)
     app.logger.warning(message)
     return (
@@ -53,7 +53,7 @@ def not_found(error):
 
 @app.errorhandler(status.HTTP_405_METHOD_NOT_ALLOWED)
 def method_not_supported(error):
-    """Handles unsuppoted HTTP methods with 405_METHOD_NOT_SUPPORTED"""
+    """Handles unsupported HTTP methods with 405_METHOD_NOT_SUPPORTED"""
     message = str(error)
     app.logger.warning(message)
     return (
@@ -68,7 +68,7 @@ def method_not_supported(error):
 
 @app.errorhandler(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 def mediatype_not_supported(error):
-    """Handles unsuppoted media requests with 415_UNSUPPORTED_MEDIA_TYPE"""
+    """Handles unsupported media requests with 415_UNSUPPORTED_MEDIA_TYPE"""
     message = str(error)
     app.logger.warning(message)
     return (

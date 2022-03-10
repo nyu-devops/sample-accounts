@@ -33,11 +33,11 @@ class PersistentBase():
         db.session.add(self)
         db.session.commit()
 
-    def save(self):
+    def update(self):
         """
         Updates a Account to the database
         """
-        logger.info("Saving %s", self.name)
+        logger.info("Updating %s", self.name)
         db.session.commit()
 
     def delete(self):
@@ -67,12 +67,6 @@ class PersistentBase():
         """ Finds a record by it's ID """
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
-
-    @classmethod
-    def find_or_404(cls, by_id):
-        """ Find a record by it's id """
-        logger.info("Processing lookup or 404 for id %s ...", by_id)
-        return cls.query.get_or_404(by_id)
 
 
 ######################################################################
