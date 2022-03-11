@@ -1,3 +1,5 @@
+---
+# Python 3 with PostgreSQL
 version: "3"
 
 services:
@@ -6,16 +8,14 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     hostname: nyu
-    ports:
-      - 5000:5000
     volumes:
-      - ~/.gitconfig:/home/devops/.gitconfig
-      - ~/.ssh/:/home/devops/.ssh/
-      - ..:/workspace
+      - ..:/app
     command: sleep infinity
     environment:
-      DATABASE_URI: "postgres://postgres:postgres@postgres:5432/postgres"
-      FASK_APP: services:app
+      FLASK_APP: service:app
+      FLASK_ENV: development
+      GUNICORN_BIND: "0.0.0.0:8000"
+      DATABASE_URI: postgresql://postgres:postgres@postgres:5432/postgres
     networks:
       - dev
     depends_on:
@@ -23,18 +23,15 @@ services:
 
   postgres:
     image: postgres:alpine
-    restart: always
-    ports:
-      - 5432:5432
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     networks:
       - dev
 
 volumes:
-  postgres_data:
+  postgres:
 
 networks:
   dev:

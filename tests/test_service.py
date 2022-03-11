@@ -9,21 +9,22 @@ import os
 import logging
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from flask_api import status  # HTTP Status Codes
 from tests.factories import AccountFactory, AddressFactory
+from service import status  # HTTP Status Codes
 from service.models import db
-from service.service import app, init_db
+from service.routes import app, init_db
 
-# DATABASE_URI = os.getenv('DATABASE_URI', 'sqlite:///../db/test.db')
 DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
+
+BASE_URL = "/accounts"
 
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
-class TestYourResourceServer(TestCase):
-    """ <your resource name> Server Tests """
+class TestAccountService(TestCase):
+    """ Account Service Tests """
 
     @classmethod
     def setUpClass(cls):
@@ -60,7 +61,7 @@ class TestYourResourceServer(TestCase):
         for _ in range(count):
             account = AccountFactory()
             resp = self.app.post(
-                "/accounts", json=account.serialize(), content_type="application/json"
+                BASE_URL, json=account.serialize(), content_type="application/json"
             )
             self.assertEqual(
                 resp.status_code, status.HTTP_201_CREATED, "Could not create test Account"
@@ -82,7 +83,7 @@ class TestYourResourceServer(TestCase):
     def test_get_account_list(self):
         """ Get a list of Accounts """
         self._create_accounts(5)
-        resp = self.app.get("/accounts")
+        resp = self.app.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
@@ -90,7 +91,10 @@ class TestYourResourceServer(TestCase):
     def test_get_account_by_name(self):
         """ Get a Account by Name """
         accounts = self._create_accounts(3)
-        resp = self.app.get("/accounts?name={}".format(accounts[1].name))
+        resp = self.app.get(
+            BASE_URL, 
+            query_string=f"name={accounts[1].name}"
+        )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data[0]["name"], accounts[1].name)
@@ -100,7 +104,7 @@ class TestYourResourceServer(TestCase):
         # get the id of an account
         account = self._create_accounts(1)[0]
         resp = self.app.get(
-            "/accounts/{}".format(account.id), 
+            f"{BASE_URL}/{account.id}", 
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -109,14 +113,14 @@ class TestYourResourceServer(TestCase):
 
     def test_get_account_not_found(self):
         """ Get an Account that is not found """
-        resp = self.app.get("/accounts/0")
+        resp = self.app.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_account(self):
         """ Create a new Account """
         account = AccountFactory()
         resp = self.app.post(
-            "/accounts", 
+            BASE_URL, 
             json=account.serialize(), 
             content_type="application/json"
         )
@@ -149,7 +153,7 @@ class TestYourResourceServer(TestCase):
         # create an Account to update
         test_account = AccountFactory()
         resp = self.app.post(
-            "/accounts", 
+            BASE_URL, 
             json=test_account.serialize(), 
             content_type="application/json"
         )
@@ -158,8 +162,9 @@ class TestYourResourceServer(TestCase):
         # update the pet
         new_account = resp.get_json()
         new_account["name"] = "Happy-Happy Joy-Joy"
+        new_account_id = new_account["id"]
         resp = self.app.put(
-            "/accounts/{}".format(new_account["id"]),
+            f"{BASE_URL}/{new_account_id}",
             json=new_account,
             content_type="application/json",
         )
@@ -172,7 +177,7 @@ class TestYourResourceServer(TestCase):
         # get the id of an account
         account = self._create_accounts(1)[0]
         resp = self.app.delete(
-            "/accounts/{}".format(account.id), 
+            f"{BASE_URL}/{account.id}", 
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
@@ -181,7 +186,7 @@ class TestYourResourceServer(TestCase):
         """ Send wrong media type """
         account = AccountFactory()
         resp = self.app.post(
-            "/accounts", 
+            BASE_URL, 
             json={"name": "not enough data"}, 
             content_type="application/json"
         )
@@ -191,7 +196,7 @@ class TestYourResourceServer(TestCase):
         """ Send wrong media type """
         account = AccountFactory()
         resp = self.app.post(
-            "/accounts", 
+            BASE_URL, 
             json=account.serialize(), 
             content_type="test/html"
         )
@@ -200,7 +205,7 @@ class TestYourResourceServer(TestCase):
     def test_method_not_allowed(self):
         """ Make an illegal method call """
         resp = self.app.put(
-            "/accounts", 
+            BASE_URL, 
             json={"not": "today"}, 
             content_type="application/json"
         )
@@ -219,7 +224,7 @@ class TestYourResourceServer(TestCase):
 
         # Create address 1
         resp = self.app.post(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses", 
             json=address_list[0].serialize(), 
             content_type="application/json"
         )
@@ -227,7 +232,7 @@ class TestYourResourceServer(TestCase):
 
         # Create address 2
         resp = self.app.post(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses",
             json=address_list[1].serialize(), 
             content_type="application/json"
         )
@@ -235,7 +240,7 @@ class TestYourResourceServer(TestCase):
 
         # get the list back and make sure there are 2
         resp = self.app.get(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses", 
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -249,7 +254,7 @@ class TestYourResourceServer(TestCase):
         account = self._create_accounts(1)[0]
         address = AddressFactory()
         resp = self.app.post(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses",
             json=address.serialize(), 
             content_type="application/json"
         )
@@ -269,7 +274,7 @@ class TestYourResourceServer(TestCase):
         account = self._create_accounts(1)[0]
         address = AddressFactory()
         resp = self.app.post(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses",
             json=address.serialize(), 
             content_type="application/json"
         )
@@ -281,7 +286,7 @@ class TestYourResourceServer(TestCase):
 
         # retrieve it back
         resp = self.app.get(
-            "/accounts/{}/addresses/{}".format(account.id, address_id), 
+            f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -301,7 +306,7 @@ class TestYourResourceServer(TestCase):
         account = self._create_accounts(1)[0]
         address = AddressFactory()
         resp = self.app.post(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses", 
             json=address.serialize(), 
             content_type="application/json"
         )
@@ -314,7 +319,7 @@ class TestYourResourceServer(TestCase):
 
         # send the update back
         resp = self.app.put(
-            "/accounts/{}/addresses/{}".format(account.id, address_id), 
+            f"{BASE_URL}/{account.id}/addresses/{address_id}",
             json=data, 
             content_type="application/json"
         )
@@ -322,7 +327,7 @@ class TestYourResourceServer(TestCase):
 
         # retrieve it back
         resp = self.app.get(
-            "/accounts/{}/addresses/{}".format(account.id, address_id), 
+            f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -338,7 +343,7 @@ class TestYourResourceServer(TestCase):
         account = self._create_accounts(1)[0]
         address = AddressFactory()
         resp = self.app.post(
-            "/accounts/{}/addresses".format(account.id), 
+            f"{BASE_URL}/{account.id}/addresses",
             json=address.serialize(), 
             content_type="application/json"
         )
@@ -349,14 +354,14 @@ class TestYourResourceServer(TestCase):
 
         # send delete request
         resp = self.app.delete(
-            "/accounts/{}/addresses/{}".format(account.id, address_id),
+            f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure address is not there
         resp = self.app.get(
-            "/accounts/{}/addresses/{}".format(account.id, address_id), 
+            f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
