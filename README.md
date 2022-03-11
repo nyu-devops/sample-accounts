@@ -41,16 +41,6 @@ delete_addresses  DELETE   /accounts/<account_id>/addresses/<address_id>
 
 The test cases have 95% test coverage and can be run with `nosetests`
 
-## Running the service
-
-The project uses *honcho* which gets it's commands from the `Procfile`. To start the service simply use:
-
-```shell
-$ honcho start
-```
-
-You should be able to reach the service at: http://localhost:8000. The port that is used is controlled by an environment variable defined in the `.flaskenv` file which Flask uses to load it's configuration from the environment by default.
-
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
