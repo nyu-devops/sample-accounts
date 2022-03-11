@@ -106,6 +106,18 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
 
+    def test_read_account(self):
+        """ Read an account """
+        account = self._create_account()
+        account.create()
+
+        # Read it back
+        found_account = Account.find(account.id)
+        self.assertEqual(found_account.id, account.id)
+        self.assertEqual(found_account.name, account.name)
+        self.assertEqual(found_account.email, account.email)
+        self.assertEqual(found_account.phone_number, account.phone_number)
+        self.assertEqual(found_account.date_joined, account.date_joined)
 
     def test_update_account(self):
         """ Update an account """
@@ -138,6 +150,17 @@ class TestAccount(unittest.TestCase):
         account.delete()
         accounts = Account.all()
         self.assertEqual(len(accounts), 0)
+
+    def test_list_all_accounts(self):
+        """ List all Accounts in the database """
+        accounts = Account.all()
+        self.assertEqual(accounts, [])
+        for _ in range(5):
+            account = self._create_account()
+            account.create()
+        # Assert that there are not 5 accounts in the database
+        accounts = Account.all()
+        self.assertEqual(len(accounts), 5)
 
     def test_find_by_name(self):
         """ Find by name """
