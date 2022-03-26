@@ -248,9 +248,13 @@ def init_db():
     global app
     Account.init_db(app)
 
-def check_content_type(content_type):
-    """ Checks that the media type is correct """
-    if request.headers["Content-Type"] == content_type:
+def check_content_type(media_type):
+    """Checks that the media type is correct"""
+    content_type = request.headers.get("Content-Type")
+    if content_type and content_type == media_type:
         return
-    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-    abort(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, f"Content-Type must be {content_type}")
+    app.logger.error("Invalid Content-Type: %s", content_type)
+    abort(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        "Content-Type must be {}".format(media_type),
+    )    
