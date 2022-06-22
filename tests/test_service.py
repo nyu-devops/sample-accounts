@@ -44,7 +44,7 @@ class TestAccountService(TestCase):
         """ Runs before each test """
         db.drop_all()  # clean up the last tests
         db.create_all()  # create new tables
-        self.app = app.test_client()
+        self.client = app.test_client()
 
     def tearDown(self):
         """ Runs once after each test case """
@@ -60,9 +60,7 @@ class TestAccountService(TestCase):
         accounts = []
         for _ in range(count):
             account = AccountFactory()
-            resp = self.app.post(
-                BASE_URL, json=account.serialize(), content_type="application/json"
-            )
+            resp = self.client.post(BASE_URL, json=account.serialize())
             self.assertEqual(
                 resp.status_code, status.HTTP_201_CREATED, "Could not create test Account"
             )
@@ -77,13 +75,13 @@ class TestAccountService(TestCase):
 
     def test_index(self):
         """ It should call the Home Page """
-        resp = self.app.get("/")
+        resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_get_account_list(self):
         """ It should Get a list of Accounts """
         self._create_accounts(5)
-        resp = self.app.get(BASE_URL)
+        resp = self.client.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
@@ -91,7 +89,7 @@ class TestAccountService(TestCase):
     def test_get_account_by_name(self):
         """ It should Get an Account by Name """
         accounts = self._create_accounts(3)
-        resp = self.app.get(
+        resp = self.client.get(
             BASE_URL, 
             query_string=f"name={accounts[1].name}"
         )
@@ -103,7 +101,7 @@ class TestAccountService(TestCase):
         """ It should Read a single Account """
         # get the id of an account
         account = self._create_accounts(1)[0]
-        resp = self.app.get(
+        resp = self.client.get(
             f"{BASE_URL}/{account.id}", 
             content_type="application/json"
         )
@@ -113,13 +111,13 @@ class TestAccountService(TestCase):
 
     def test_get_account_not_found(self):
         """ It should not Read an Account that is not found """
-        resp = self.app.get(f"{BASE_URL}/0")
+        resp = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_account(self):
         """ It should Create a new Account """
         account = AccountFactory()
-        resp = self.app.post(
+        resp = self.client.post(
             BASE_URL, 
             json=account.serialize(), 
             content_type="application/json"
@@ -139,7 +137,7 @@ class TestAccountService(TestCase):
         self.assertEqual(new_account["date_joined"], str(account.date_joined), "Date Joined does not match")
 
         # Check that the location header was correct by getting it
-        resp = self.app.get(location, content_type="application/json")
+        resp = self.client.get(location, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         new_account = resp.get_json()
         self.assertEqual(new_account["name"], account.name, "Names does not match")
@@ -152,22 +150,14 @@ class TestAccountService(TestCase):
         """ It should Update an existing Account """
         # create an Account to update
         test_account = AccountFactory()
-        resp = self.app.post(
-            BASE_URL, 
-            json=test_account.serialize(), 
-            content_type="application/json"
-        )
+        resp = self.client.post(BASE_URL, json=test_account.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         # update the pet
         new_account = resp.get_json()
         new_account["name"] = "Happy-Happy Joy-Joy"
         new_account_id = new_account["id"]
-        resp = self.app.put(
-            f"{BASE_URL}/{new_account_id}",
-            json=new_account,
-            content_type="application/json",
-        )
+        resp = self.client.put(f"{BASE_URL}/{new_account_id}", json=new_account)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], "Happy-Happy Joy-Joy")
@@ -176,26 +166,19 @@ class TestAccountService(TestCase):
         """ It should Delete an Account """
         # get the id of an account
         account = self._create_accounts(1)[0]
-        resp = self.app.delete(
-            f"{BASE_URL}/{account.id}", 
-            content_type="application/json"
-        )
+        resp = self.client.delete(f"{BASE_URL}/{account.id}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_bad_request(self):
         """ It should not Create when sending the wrong data """
         account = AccountFactory()
-        resp = self.app.post(
-            BASE_URL, 
-            json={"name": "not enough data"}, 
-            content_type="application/json"
-        )
+        resp = self.client.post(BASE_URL, json={"name": "not enough data"})
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_unsupported_media_type(self):
         """ It should not Create when sending wrong media type """
         account = AccountFactory()
-        resp = self.app.post(
+        resp = self.client.post(
             BASE_URL, 
             json=account.serialize(), 
             content_type="test/html"
@@ -204,11 +187,7 @@ class TestAccountService(TestCase):
 
     def test_method_not_allowed(self):
         """ It should not allow an illegal method call """
-        resp = self.app.put(
-            BASE_URL, 
-            json={"not": "today"}, 
-            content_type="application/json"
-        )
+        resp = self.client.put(BASE_URL, json={"not": "today"})
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
@@ -223,26 +202,21 @@ class TestAccountService(TestCase):
         address_list = AddressFactory.create_batch(2)
 
         # Create address 1
-        resp = self.app.post(
-            f"{BASE_URL}/{account.id}/addresses", 
-            json=address_list[0].serialize(), 
-            content_type="application/json"
+        resp = self.client.post(
+            f"{BASE_URL}/{account.id}/addresses",
+            json=address_list[0].serialize()
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         # Create address 2
-        resp = self.app.post(
+        resp = self.client.post(
             f"{BASE_URL}/{account.id}/addresses",
-            json=address_list[1].serialize(), 
-            content_type="application/json"
+            json=address_list[1].serialize()
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         # get the list back and make sure there are 2
-        resp = self.app.get(
-            f"{BASE_URL}/{account.id}/addresses", 
-            content_type="application/json"
-        )
+        resp = self.client.get(f"{BASE_URL}/{account.id}/addresses")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         data = resp.get_json()
@@ -253,7 +227,7 @@ class TestAccountService(TestCase):
         """ It should Add an address to an account """
         account = self._create_accounts(1)[0]
         address = AddressFactory()
-        resp = self.app.post(
+        resp = self.client.post(
             f"{BASE_URL}/{account.id}/addresses",
             json=address.serialize(), 
             content_type="application/json"
@@ -273,7 +247,7 @@ class TestAccountService(TestCase):
         # create a known address
         account = self._create_accounts(1)[0]
         address = AddressFactory()
-        resp = self.app.post(
+        resp = self.client.post(
             f"{BASE_URL}/{account.id}/addresses",
             json=address.serialize(), 
             content_type="application/json"
@@ -285,7 +259,7 @@ class TestAccountService(TestCase):
         address_id = data["id"]
 
         # retrieve it back
-        resp = self.app.get(
+        resp = self.client.get(
             f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
@@ -305,7 +279,7 @@ class TestAccountService(TestCase):
         # create a known address
         account = self._create_accounts(1)[0]
         address = AddressFactory()
-        resp = self.app.post(
+        resp = self.client.post(
             f"{BASE_URL}/{account.id}/addresses", 
             json=address.serialize(), 
             content_type="application/json"
@@ -318,7 +292,7 @@ class TestAccountService(TestCase):
         data["name"] = "XXXX"
 
         # send the update back
-        resp = self.app.put(
+        resp = self.client.put(
             f"{BASE_URL}/{account.id}/addresses/{address_id}",
             json=data, 
             content_type="application/json"
@@ -326,7 +300,7 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         # retrieve it back
-        resp = self.app.get(
+        resp = self.client.get(
             f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
@@ -342,7 +316,7 @@ class TestAccountService(TestCase):
         """ It should Delete an Address """
         account = self._create_accounts(1)[0]
         address = AddressFactory()
-        resp = self.app.post(
+        resp = self.client.post(
             f"{BASE_URL}/{account.id}/addresses",
             json=address.serialize(), 
             content_type="application/json"
@@ -353,14 +327,14 @@ class TestAccountService(TestCase):
         address_id = data["id"]
 
         # send delete request
-        resp = self.app.delete(
+        resp = self.client.delete(
             f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure address is not there
-        resp = self.app.get(
+        resp = self.client.get(
             f"{BASE_URL}/{account.id}/addresses/{address_id}",
             content_type="application/json"
         )
