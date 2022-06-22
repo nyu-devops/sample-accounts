@@ -76,12 +76,12 @@ class TestAccountService(TestCase):
 ######################################################################
 
     def test_index(self):
-        """ Test index call """
+        """ It should call the Home Page """
         resp = self.app.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_get_account_list(self):
-        """ Get a list of Accounts """
+        """ It should Get a list of Accounts """
         self._create_accounts(5)
         resp = self.app.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -89,7 +89,7 @@ class TestAccountService(TestCase):
         self.assertEqual(len(data), 5)
 
     def test_get_account_by_name(self):
-        """ Get a Account by Name """
+        """ It should Get an Account by Name """
         accounts = self._create_accounts(3)
         resp = self.app.get(
             BASE_URL, 
@@ -100,7 +100,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data[0]["name"], accounts[1].name)
 
     def test_get_account(self):
-        """ Get a single Account """
+        """ It should Read a single Account """
         # get the id of an account
         account = self._create_accounts(1)[0]
         resp = self.app.get(
@@ -112,12 +112,12 @@ class TestAccountService(TestCase):
         self.assertEqual(data["name"], account.name)
 
     def test_get_account_not_found(self):
-        """ Get an Account that is not found """
+        """ It should not Read an Account that is not found """
         resp = self.app.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_account(self):
-        """ Create a new Account """
+        """ It should Create a new Account """
         account = AccountFactory()
         resp = self.app.post(
             BASE_URL, 
@@ -149,7 +149,7 @@ class TestAccountService(TestCase):
         self.assertEqual(new_account["date_joined"], str(account.date_joined), "Date Joined does not match")
 
     def test_update_account(self):
-        """ Update an existing Account """
+        """ It should Update an existing Account """
         # create an Account to update
         test_account = AccountFactory()
         resp = self.app.post(
@@ -173,7 +173,7 @@ class TestAccountService(TestCase):
         self.assertEqual(updated_account["name"], "Happy-Happy Joy-Joy")
 
     def test_delete_account(self):
-        """ Delete an Account """
+        """ It should Delete an Account """
         # get the id of an account
         account = self._create_accounts(1)[0]
         resp = self.app.delete(
@@ -183,7 +183,7 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_bad_request(self):
-        """ Send wrong media type """
+        """ It should not Create when sending the wrong data """
         account = AccountFactory()
         resp = self.app.post(
             BASE_URL, 
@@ -193,7 +193,7 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_unsupported_media_type(self):
-        """ Send wrong media type """
+        """ It should not Create when sending wrong media type """
         account = AccountFactory()
         resp = self.app.post(
             BASE_URL, 
@@ -203,7 +203,7 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_method_not_allowed(self):
-        """ Make an illegal method call """
+        """ It should not allow an illegal method call """
         resp = self.app.put(
             BASE_URL, 
             json={"not": "today"}, 
@@ -217,7 +217,7 @@ class TestAccountService(TestCase):
 ######################################################################
 
     def test_get_address_list(self):
-        """ Get a list of Addresses """
+        """ It should Get a list of Addresses """
         # add two addresses to account
         account = self._create_accounts(1)[0]
         address_list = AddressFactory.create_batch(2)
@@ -250,7 +250,7 @@ class TestAccountService(TestCase):
 
 
     def test_add_address(self):
-        """ Add an address to an account """
+        """ It should Add an address to an account """
         account = self._create_accounts(1)[0]
         address = AddressFactory()
         resp = self.app.post(
@@ -269,7 +269,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data["postalcode"], address.postalcode)
 
     def test_get_address(self):
-        """ Get an address from an account """
+        """ It should Get an address from an account """
         # create a known address
         account = self._create_accounts(1)[0]
         address = AddressFactory()
@@ -301,7 +301,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data["postalcode"], address.postalcode)
 
     def test_update_address(self):
-        """ Update an address on an account """
+        """ It should Update an address on an account """
         # create a known address
         account = self._create_accounts(1)[0]
         address = AddressFactory()
@@ -339,7 +339,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data["name"], "XXXX")
 
     def test_delete_address(self):
-        """ Delete an Address """
+        """ It should Delete an Address """
         account = self._create_accounts(1)[0]
         address = AddressFactory()
         resp = self.app.post(

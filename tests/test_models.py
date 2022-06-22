@@ -48,7 +48,7 @@ class TestAccount(unittest.TestCase):
 ######################################################################
 
     def _create_account(self, addresses=[]):
-        """ Creates an account from a Factory """
+        """ It should Create an account from a Factory """
         fake_account = AccountFactory()
         account = Account(
             name=fake_account.name, 
@@ -62,7 +62,7 @@ class TestAccount(unittest.TestCase):
         return account
 
     def _create_address(self):
-        """ Creates fake addresses from factory """
+        """ It should Create fake addresses from factory """
         fake_address = AddressFactory()
         address = Address(
             name=fake_address.name,
@@ -80,7 +80,7 @@ class TestAccount(unittest.TestCase):
 ######################################################################
 
     def test_create_an_account(self):
-        """ Create a Account and assert that it exists """
+        """ It should Create an Account and assert that it exists """
         fake_account = AccountFactory()
         account = Account(
             name=fake_account.name, 
@@ -96,7 +96,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(account.date_joined, fake_account.date_joined)
 
     def test_add_a_account(self):
-        """ Create an account and add it to the database """
+        """ It should Create an account and add it to the database """
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = self._create_account()
@@ -107,7 +107,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(accounts), 1)
 
     def test_read_account(self):
-        """ Read an account """
+        """ It should Read an account """
         account = self._create_account()
         account.create()
 
@@ -120,7 +120,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(found_account.date_joined, account.date_joined)
 
     def test_update_account(self):
-        """ Update an account """
+        """ It should Update an account """
         account = self._create_account()
         account.create()
         # Assert that it was assigned an id and shows up in the database
@@ -137,7 +137,7 @@ class TestAccount(unittest.TestCase):
 
 
     def test_delete_an_account(self):
-        """ Delete an account from the database """
+        """ It should Delete an account from the database """
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = self._create_account()
@@ -152,7 +152,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(accounts), 0)
 
     def test_list_all_accounts(self):
-        """ List all Accounts in the database """
+        """ It should List all Accounts in the database """
         accounts = Account.all()
         self.assertEqual(accounts, [])
         for _ in range(5):
@@ -163,7 +163,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(accounts), 5)
 
     def test_find_by_name(self):
-        """ Find by name """
+        """ It should Find an Account by name """
         account = self._create_account()
         account.create()
 
@@ -173,7 +173,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(same_account.name, account.name)
 
     def test_serialize_an_account(self):
-        """ Serialize an account """
+        """ It should Serialize an account """
         address = self._create_address()
         account = self._create_account(addresses=[address])
         serial_account = account.serialize()
@@ -193,7 +193,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(addresses[0]['postalcode'], address.postalcode)
 
     def test_deserialize_an_account(self):
-        """ Deserialize an account """
+        """ It should Deserialize an account """
         address = self._create_address()
         account = self._create_account(addresses=[address])
         serial_account = account.serialize()
@@ -206,27 +206,27 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(new_account.date_joined, account.date_joined)
 
     def test_deserialize_with_key_error(self):
-        """ Deserialize an account with a KeyError """
+        """ It should not Deserialize an account with a KeyError """
         account = Account()
         self.assertRaises(DataValidationError, account.deserialize, {})
 
     def test_deserialize_with_type_error(self):
-        """ Deserialize an account with a TypeError """
+        """ It should not Deserialize an account with a TypeError """
         account = Account()
         self.assertRaises(DataValidationError, account.deserialize, [])
 
     def test_deserialize_address_key_error(self):
-        """ Deserialize an address with a KeyError """
+        """ It should not Deserialize an address with a KeyError """
         address = Address()
         self.assertRaises(DataValidationError, address.deserialize, {})
 
     def test_deserialize_address_type_error(self):
-        """ Deserialize an address with a TypeError """
+        """ It should not Deserialize an address with a TypeError """
         address = Address()
         self.assertRaises(DataValidationError, address.deserialize, [])
 
     def test_add_account_address(self):
-        """ Create an account with an address and add it to the database """
+        """ It should Create an account with an address and add it to the database """
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = self._create_account()
@@ -250,7 +250,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(account.addresses[1].name, address2.name)
 
     def test_update_account_address(self):
-        """ Update an accounts address """
+        """ It should Update an accounts address """
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
@@ -276,7 +276,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(address.city, "XX")
 
     def test_delete_account_address(self):
-        """ Delete an accounts address """
+        """ It should Delete an accounts address """
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
