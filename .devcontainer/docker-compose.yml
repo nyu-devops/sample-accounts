@@ -8,6 +8,7 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     hostname: nyu
+    container_name: sample-accounts
     volumes:
       - ..:/app
     command: sleep infinity
@@ -23,6 +24,8 @@ services:
 
   postgres:
     image: postgres:alpine
+    # ports:
+    #   - 5432:5432
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
