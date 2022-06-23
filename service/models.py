@@ -12,17 +12,21 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
+
 class DataValidationError(Exception):
-    """ Used for an data validation errors when deserializing """
+    """Used for an data validation errors when deserializing"""
+
     pass
 
-DATETIME_FORMAT='%Y-%m-%d %H:%M:%S.%f'
+
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+
 
 ######################################################################
 #  P E R S I S T E N T   B A S E   M O D E L
 ######################################################################
-class PersistentBase():
-    """ Base class added persistent methods """
+class PersistentBase:
+    """Base class added persistent methods"""
 
     def create(self):
         """
@@ -41,14 +45,14 @@ class PersistentBase():
         db.session.commit()
 
     def delete(self):
-        """ Removes a Account from the data store """
+        """Removes a Account from the data store"""
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
 
     @classmethod
     def init_db(cls, app):
-        """ Initializes the database session """
+        """Initializes the database session"""
         logger.info("Initializing database")
         cls.app = app
         # This is where we initialize SQLAlchemy from the Flask app
@@ -58,13 +62,13 @@ class PersistentBase():
 
     @classmethod
     def all(cls):
-        """ Returns all of the records in the database """
+        """Returns all of the records in the database"""
         logger.info("Processing all records")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a record by it's ID """
+        """Finds a record by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
@@ -79,21 +83,31 @@ class Address(db.Model, PersistentBase):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-    name = db.Column(db.String(64)) # e.g., work, home, vacation, etc.
+    account_id = db.Column(db.Integer, db.ForeignKey("account.id"), nullable=False)
+    name = db.Column(db.String(64))  # e.g., work, home, vacation, etc.
     street = db.Column(db.String(64))
     city = db.Column(db.String(64))
     state = db.Column(db.String(2))
     postalcode = db.Column(db.String(16))
 
     def __repr__(self):
-        return "<Address %r id=[%s] account[%s]>" % (self.name, self.id, self.account_id)
+        return "<Address %r id=[%s] account[%s]>" % (
+            self.name,
+            self.id,
+            self.account_id,
+        )
 
     def __str__(self):
-        return "%s: %s, %s, %s %s" % (self.name, self.street, self.city, self.state, self.postalcode)
+        return "%s: %s, %s, %s %s" % (
+            self.name,
+            self.street,
+            self.city,
+            self.state,
+            self.postalcode,
+        )
 
     def serialize(self):
-        """ Serializes a Address into a dictionary """
+        """Serializes a Address into a dictionary"""
         return {
             "id": self.id,
             "account_id": self.account_id,
@@ -101,7 +115,7 @@ class Address(db.Model, PersistentBase):
             "street": self.street,
             "city": self.city,
             "state": self.state,
-            "postalcode": self.postalcode
+            "postalcode": self.postalcode,
         }
 
     def deserialize(self, data):
@@ -122,10 +136,10 @@ class Address(db.Model, PersistentBase):
             raise DataValidationError("Invalid Address: missing " + error.args[0])
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Address: body of request contained" "bad or no data"
+                "Invalid Address: body of request contained " 
+                "bad or no data " + error.args[0]
             )
         return self
-
 
 
 ######################################################################
@@ -144,23 +158,23 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     phone_number = db.Column(db.String(32), nullable=True)  # phone is optional
     date_joined = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    addresses = db.relationship('Address', backref='account', lazy=True)  
+    addresses = db.relationship("Address", backref="account", lazy=True)
 
     def __repr__(self):
         return "<Account %r id=[%s]>" % (self.name, self.id)
 
     def serialize(self):
-        """ Serializes a Account into a dictionary """
+        """Serializes a Account into a dictionary"""
         account = {
             "id": self.id,
             "name": self.name,
             "email": self.email,
             "phone_number": self.phone_number,
             "date_joined": self.date_joined.strftime(DATETIME_FORMAT),
-            "addresses": []
+            "addresses": [],
         }
         for address in self.addresses:
-            account['addresses'].append(address.serialize())
+            account["addresses"].append(address.serialize())
         return account
 
     def deserialize(self, data):
@@ -191,7 +205,7 @@ class Account(db.Model, PersistentBase):
 
     @classmethod
     def find_by_name(cls, name):
-        """ Returns all Accounts with the given name
+        """Returns all Accounts with the given name
 
         Args:
             name (string): the name of the Accounts you want to match

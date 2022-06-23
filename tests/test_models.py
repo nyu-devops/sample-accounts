@@ -17,76 +17,76 @@ DATABASE_URI = os.getenv(
 #  Account   M O D E L   T E S T   C A S E S
 ######################################################################
 class TestAccount(unittest.TestCase):
-    """ Test Cases for Account Model """
+    """Test Cases for Account Model"""
 
     @classmethod
     def setUpClass(cls):
-        """ This runs once before the entire test suite """
-        app.config['TESTING'] = True
-        app.config['DEBUG'] = False
+        """This runs once before the entire test suite"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         Account.init_db(app)
 
     @classmethod
     def tearDownClass(cls):
-        """ This runs once after the entire test suite """
+        """This runs once after the entire test suite"""
         pass
 
     def setUp(self):
-        """ This runs before each test """
+        """This runs before each test"""
         db.drop_all()  # clean up the last tests
         db.create_all()  # make our sqlalchemy tables
 
     def tearDown(self):
-        """ This runs after each test """
+        """This runs after each test"""
         db.session.remove()
         db.drop_all()
 
-######################################################################
-#  H E L P E R   M E T H O D S
-######################################################################
+    ######################################################################
+    #  H E L P E R   M E T H O D S
+    ######################################################################
 
     def _create_account(self, addresses=[]):
-        """ It should Create an account from a Factory """
+        """It should Create an account from a Factory"""
         fake_account = AccountFactory()
         account = Account(
-            name=fake_account.name, 
-            email=fake_account.email, 
-            phone_number=fake_account.phone_number, 
+            name=fake_account.name,
+            email=fake_account.email,
+            phone_number=fake_account.phone_number,
             date_joined=fake_account.date_joined,
-            addresses=addresses
+            addresses=addresses,
         )
         self.assertTrue(account != None)
         self.assertEqual(account.id, None)
         return account
 
     def _create_address(self):
-        """ It should Create fake addresses from factory """
+        """It should Create fake addresses from factory"""
         fake_address = AddressFactory()
         address = Address(
             name=fake_address.name,
             street=fake_address.street,
             city=fake_address.city,
             state=fake_address.state,
-            postalcode=fake_address.postalcode
+            postalcode=fake_address.postalcode,
         )
         self.assertTrue(address != None)
         self.assertEqual(address.id, None)
         return address
 
-######################################################################
-#  T E S T   C A S E S
-######################################################################
+    ######################################################################
+    #  T E S T   C A S E S
+    ######################################################################
 
     def test_create_an_account(self):
-        """ It should Create an Account and assert that it exists """
+        """It should Create an Account and assert that it exists"""
         fake_account = AccountFactory()
         account = Account(
-            name=fake_account.name, 
-            email=fake_account.email, 
-            phone_number=fake_account.phone_number, 
-            date_joined=fake_account.date_joined 
+            name=fake_account.name,
+            email=fake_account.email,
+            phone_number=fake_account.phone_number,
+            date_joined=fake_account.date_joined,
         )
         self.assertTrue(account != None)
         self.assertEqual(account.id, None)
@@ -96,7 +96,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(account.date_joined, fake_account.date_joined)
 
     def test_add_a_account(self):
-        """ It should Create an account and add it to the database """
+        """It should Create an account and add it to the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = self._create_account()
@@ -107,7 +107,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(accounts), 1)
 
     def test_read_account(self):
-        """ It should Read an account """
+        """It should Read an account"""
         account = self._create_account()
         account.create()
 
@@ -120,7 +120,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(found_account.date_joined, account.date_joined)
 
     def test_update_account(self):
-        """ It should Update an account """
+        """It should Update an account"""
         account = self._create_account()
         account.create()
         # Assert that it was assigned an id and shows up in the database
@@ -135,9 +135,8 @@ class TestAccount(unittest.TestCase):
         account = Account.find(account.id)
         self.assertEqual(account.email, "XYZZY@plugh.com")
 
-
     def test_delete_an_account(self):
-        """ It should Delete an account from the database """
+        """It should Delete an account from the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = self._create_account()
@@ -152,7 +151,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(accounts), 0)
 
     def test_list_all_accounts(self):
-        """ It should List all Accounts in the database """
+        """It should List all Accounts in the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
         for _ in range(5):
@@ -163,7 +162,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(accounts), 5)
 
     def test_find_by_name(self):
-        """ It should Find an Account by name """
+        """It should Find an Account by name"""
         account = self._create_account()
         account.create()
 
@@ -173,27 +172,27 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(same_account.name, account.name)
 
     def test_serialize_an_account(self):
-        """ It should Serialize an account """
+        """It should Serialize an account"""
         address = self._create_address()
         account = self._create_account(addresses=[address])
         serial_account = account.serialize()
-        self.assertEqual(serial_account['id'], account.id)
-        self.assertEqual(serial_account['name'], account.name)
-        self.assertEqual(serial_account['email'], account.email)
-        self.assertEqual(serial_account['phone_number'], account.phone_number)
-        self.assertEqual(serial_account['date_joined'], str(account.date_joined))
-        self.assertEqual(len(serial_account['addresses']), 1)
-        addresses = serial_account['addresses']
-        self.assertEqual(addresses[0]['id'], address.id)
-        self.assertEqual(addresses[0]['account_id'], address.account_id)
-        self.assertEqual(addresses[0]['name'], address.name)
-        self.assertEqual(addresses[0]['street'], address.street)
-        self.assertEqual(addresses[0]['city'], address.city)
-        self.assertEqual(addresses[0]['state'], address.state)
-        self.assertEqual(addresses[0]['postalcode'], address.postalcode)
+        self.assertEqual(serial_account["id"], account.id)
+        self.assertEqual(serial_account["name"], account.name)
+        self.assertEqual(serial_account["email"], account.email)
+        self.assertEqual(serial_account["phone_number"], account.phone_number)
+        self.assertEqual(serial_account["date_joined"], str(account.date_joined))
+        self.assertEqual(len(serial_account["addresses"]), 1)
+        addresses = serial_account["addresses"]
+        self.assertEqual(addresses[0]["id"], address.id)
+        self.assertEqual(addresses[0]["account_id"], address.account_id)
+        self.assertEqual(addresses[0]["name"], address.name)
+        self.assertEqual(addresses[0]["street"], address.street)
+        self.assertEqual(addresses[0]["city"], address.city)
+        self.assertEqual(addresses[0]["state"], address.state)
+        self.assertEqual(addresses[0]["postalcode"], address.postalcode)
 
     def test_deserialize_an_account(self):
-        """ It should Deserialize an account """
+        """It should Deserialize an account"""
         address = self._create_address()
         account = self._create_account(addresses=[address])
         serial_account = account.serialize()
@@ -206,27 +205,27 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(new_account.date_joined, account.date_joined)
 
     def test_deserialize_with_key_error(self):
-        """ It should not Deserialize an account with a KeyError """
+        """It should not Deserialize an account with a KeyError"""
         account = Account()
         self.assertRaises(DataValidationError, account.deserialize, {})
 
     def test_deserialize_with_type_error(self):
-        """ It should not Deserialize an account with a TypeError """
+        """It should not Deserialize an account with a TypeError"""
         account = Account()
         self.assertRaises(DataValidationError, account.deserialize, [])
 
     def test_deserialize_address_key_error(self):
-        """ It should not Deserialize an address with a KeyError """
+        """It should not Deserialize an address with a KeyError"""
         address = Address()
         self.assertRaises(DataValidationError, address.deserialize, {})
 
     def test_deserialize_address_type_error(self):
-        """ It should not Deserialize an address with a TypeError """
+        """It should not Deserialize an address with a TypeError"""
         address = Address()
         self.assertRaises(DataValidationError, address.deserialize, [])
 
     def test_add_account_address(self):
-        """ It should Create an account with an address and add it to the database """
+        """It should Create an account with an address and add it to the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = self._create_account()
@@ -250,7 +249,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(account.addresses[1].name, address2.name)
 
     def test_update_account_address(self):
-        """ It should Update an accounts address """
+        """It should Update an accounts address"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
@@ -276,7 +275,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(address.city, "XX")
 
     def test_delete_account_address(self):
-        """ It should Delete an accounts address """
+        """It should Delete an accounts address"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
@@ -297,4 +296,3 @@ class TestAccount(unittest.TestCase):
         # Fetch it back again
         account = Account.find(account.id)
         self.assertEqual(len(account.addresses), 0)
-

@@ -19,8 +19,8 @@ This module creates and configures the Flask app and sets up the logging
 and SQL database
 """
 import sys
-import logging
 from flask import Flask
+from .utils import log_handlers
 
 # Create Flask application
 app = Flask(__name__)
@@ -28,22 +28,14 @@ app.config.from_object("config")
 
 # Import the routes After the Flask app is created
 # pylint: disable=wrong-import-position, cyclic-import
-from service import routes, models, error_handlers
+from service import (
+    routes,
+    models,
+)  # pylint: disable=wrong-import-position, wrong-import-order
+from .utils import error_handlers  # pylint: disable=wrong-import-position
 
 # Set up logging for production
-print("Setting up logging for {}...".format(__name__))
-app.logger.propagate = False
-if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
-    # Make all log formats consistent
-    formatter = logging.Formatter(
-        "[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s", "%Y-%m-%d %H:%M:%S %z"
-    )
-    for handler in app.logger.handlers:
-        handler.setFormatter(formatter)
-    app.logger.info("Logging handler established")
+log_handlers.init_logging(app, "gunicorn.error")
 
 app.logger.info(70 * "*")
 app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*"))

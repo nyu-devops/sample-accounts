@@ -20,14 +20,15 @@ from datetime import datetime
 from factory.fuzzy import FuzzyChoice
 from service.models import Account, Address
 
+
 class AddressFactory(factory.Factory):
-    """ Creates fake Addresses """
+    """Creates fake Addresses"""
 
     class Meta:
         model = Address
 
     id = factory.Sequence(lambda n: n)
-#    account_id = ???
+    #    account_id = ???
     name = FuzzyChoice(choices=["home", "work", "other"])
     street = factory.Faker("street_address")
     city = factory.Faker("city")
@@ -36,7 +37,7 @@ class AddressFactory(factory.Factory):
 
 
 class AccountFactory(factory.Factory):
-    """ Creates fake Accounts """
+    """Creates fake Accounts"""
 
     class Meta:
         model = Account

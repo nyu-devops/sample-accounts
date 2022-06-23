@@ -22,7 +22,7 @@ import sys
 import logging
 from flask import jsonify, request, url_for, make_response, abort
 from service.models import Account, Address, DataValidationError
-from . import status  # HTTP Status Codes
+from service.utils import status  # HTTP Status Codes
 from . import app  # Import Flask application
 
 
@@ -31,7 +31,7 @@ from . import app  # Import Flask application
 ######################################################################
 @app.route("/")
 def index():
-    """ Root URL response """
+    """Root URL response"""
     return (
         jsonify(
             name="Account REST API Service",
@@ -41,12 +41,13 @@ def index():
         status.HTTP_200_OK,
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
-    """ Returns all of the Accounts """
+    """Returns all of the Accounts"""
     app.logger.info("Request for Account list")
     accounts = []
     name = request.args.get("name")
@@ -72,7 +73,10 @@ def get_accounts(account_id):
     app.logger.info("Request for Account with id: %s", account_id)
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id '{account_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{account_id}' could not be found.",
+        )
 
     return make_response(jsonify(account.serialize()), status.HTTP_200_OK)
 
@@ -97,6 +101,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
@@ -111,12 +116,15 @@ def update_accounts(account_id):
     check_content_type("application/json")
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id '{account_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Account with id '{account_id}' was not found."
+        )
 
     account.deserialize(request.get_json())
     account.id = account_id
     account.update()
     return make_response(jsonify(account.serialize()), status.HTTP_200_OK)
+
 
 ######################################################################
 # DELETE AN ACCOUNT
@@ -135,9 +143,9 @@ def delete_accounts(account_id):
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 #                A D D R E S S   M E T H O D S
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 
 ######################################################################
@@ -145,20 +153,24 @@ def delete_accounts(account_id):
 ######################################################################
 @app.route("/accounts/<int:account_id>/addresses", methods=["GET"])
 def list_addresses(account_id):
-    """ Returns all of the Addresses for an Account """
+    """Returns all of the Addresses for an Account"""
     app.logger.info("Request for all Addresses for Account with id: %s", account_id)
 
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id '{account_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{account_id}' could not be found.",
+        )
 
     results = [address.serialize() for address in account.addresses]
     return make_response(jsonify(results), status.HTTP_200_OK)
 
+
 ######################################################################
 # ADD AN ADDRESS TO AN ACCOUNT
 ######################################################################
-@app.route('/accounts/<int:account_id>/addresses', methods=['POST'])
+@app.route("/accounts/<int:account_id>/addresses", methods=["POST"])
 def create_addresses(account_id):
     """
     Create an Address on an Account
@@ -170,7 +182,10 @@ def create_addresses(account_id):
 
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id '{account_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{account_id}' could not be found.",
+        )
 
     address = Address()
     address.deserialize(request.get_json())
@@ -179,23 +194,30 @@ def create_addresses(account_id):
     message = address.serialize()
     return make_response(jsonify(message), status.HTTP_201_CREATED)
 
+
 ######################################################################
 # RETRIEVE AN ADDRESS FROM ACCOUNT
 ######################################################################
-@app.route('/accounts/<int:account_id>/addresses/<int:address_id>', methods=['GET'])
+@app.route("/accounts/<int:account_id>/addresses/<int:address_id>", methods=["GET"])
 def get_addresses(account_id, address_id):
     """
     Get an Address
 
     This endpoint returns just an address
     """
-    app.logger.info("Request to retrieve Address %s for Account id: %s", (address_id, account_id))
+    app.logger.info(
+        "Request to retrieve Address %s for Account id: %s", (address_id, account_id)
+    )
 
     address = Address.find(address_id)
     if not address:
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id '{address_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{address_id}' could not be found.",
+        )
 
     return make_response(jsonify(address.serialize()), status.HTTP_200_OK)
+
 
 ######################################################################
 # UPDATE AN ADDRESS
@@ -207,17 +229,23 @@ def update_addresses(account_id, address_id):
 
     This endpoint will update an Address based the body that is posted
     """
-    app.logger.info("Request to update Address %s for Account id: %s", (address_id, account_id))
+    app.logger.info(
+        "Request to update Address %s for Account id: %s", (address_id, account_id)
+    )
     check_content_type("application/json")
 
     address = Address.find(address_id)
     if not address:
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id '{address_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{address_id}' could not be found.",
+        )
 
     address.deserialize(request.get_json())
     address.id = address_id
     address.update()
     return make_response(jsonify(address.serialize()), status.HTTP_200_OK)
+
 
 ######################################################################
 # DELETE AN ADDRESS
@@ -229,7 +257,9 @@ def delete_addresses(account_id, address_id):
 
     This endpoint will delete an Address based the id specified in the path
     """
-    app.logger.info("Request to delete Address %s for Account id: %s", (address_id, account_id))
+    app.logger.info(
+        "Request to delete Address %s for Account id: %s", (address_id, account_id)
+    )
 
     address = Address.find(address_id)
     if address:
@@ -238,15 +268,16 @@ def delete_addresses(account_id, address_id):
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
-
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
+
 def init_db():
-    """ Initializes the SQLAlchemy app """
+    """Initializes the SQLAlchemy app"""
     global app
     Account.init_db(app)
+
 
 def check_content_type(media_type):
     """Checks that the media type is correct"""
@@ -257,4 +288,4 @@ def check_content_type(media_type):
     abort(
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         "Content-Type must be {}".format(media_type),
-    )    
+    )
