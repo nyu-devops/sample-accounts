@@ -17,11 +17,8 @@ Account Service
 
 This microservice handles the lifecycle of Accounts
 """
-import os
-import sys
-import logging
 from flask import jsonify, request, url_for, make_response, abort
-from service.models import Account, Address, DataValidationError
+from service.models import Account, Address
 from service.utils import status  # HTTP Status Codes
 from . import app  # Import Flask application
 

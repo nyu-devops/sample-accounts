@@ -136,7 +136,7 @@ class Address(db.Model, PersistentBase):
             raise DataValidationError("Invalid Address: missing " + error.args[0])
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Address: body of request contained " 
+                "Invalid Address: body of request contained "
                 "bad or no data " + error.args[0]
             )
         return self
@@ -199,7 +199,8 @@ class Account(db.Model, PersistentBase):
             raise DataValidationError("Invalid Account: missing " + error.args[0])
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Account: body of request contained" "bad or no data"
+                "Invalid Account: body of request contained "
+                "bad or no data - " + error.args[0]
             )
         return self
 

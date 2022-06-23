@@ -27,12 +27,10 @@ app = Flask(__name__)
 app.config.from_object("config")
 
 # Import the routes After the Flask app is created
-# pylint: disable=wrong-import-position, cyclic-import
-from service import (
-    routes,
-    models,
-)  # pylint: disable=wrong-import-position, wrong-import-order
-from .utils import error_handlers  # pylint: disable=wrong-import-position
+# pylint: disable=wrong-import-position, cyclic-import, wrong-import-order
+from service import routes   # noqa: E402
+# pylint: disable=wrong-import-position
+from service.utils import error_handlers  # noqa: F401 E402
 
 # Set up logging for production
 log_handlers.init_logging(app, "gunicorn.error")
