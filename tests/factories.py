@@ -16,6 +16,7 @@
 Test Factory to make fake objects for testing
 """
 import factory
+import random
 from datetime import date
 from factory.fuzzy import FuzzyChoice, FuzzyDate
 from service.models import Account, Address
@@ -28,7 +29,7 @@ class AddressFactory(factory.Factory):
         model = Address
 
     id = factory.Sequence(lambda n: n)
-    #    account_id = ???
+    account_id = None
     name = FuzzyChoice(choices=["home", "work", "other"])
     street = factory.Faker("street_address")
     city = factory.Faker("city")
@@ -47,3 +48,5 @@ class AccountFactory(factory.Factory):
     email = factory.Faker("email")
     phone_number = factory.Faker("phone_number")
     date_joined = FuzzyDate(date(2008, 1, 1))
+    # Thus next line doesn't seem to work :(
+    addresses = factory.RelatedFactoryList(AddressFactory, factory_related_name='account_id', size=lambda: random.randint(1, 5))

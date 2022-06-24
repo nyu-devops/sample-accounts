@@ -85,13 +85,15 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(found_account.email, account.email)
         self.assertEqual(found_account.phone_number, account.phone_number)
         self.assertEqual(found_account.date_joined, account.date_joined)
+        self.assertEqual(found_account.addresses, [])
 
     def test_update_account(self):
         """It should Update an account"""
-        account = AccountFactory()
+        account = AccountFactory(email="advent@change.me")
         account.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
+        self.assertEqual(account.email, "advent@change.me")
 
         # Fetch it back
         account = Account.find(account.id)
