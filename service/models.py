@@ -4,7 +4,7 @@ Models for Account
 All of the models are stored in this module
 """
 import logging
-from datetime import datetime
+from datetime import date
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -17,9 +17,6 @@ class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
     pass
-
-
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 
 
 ######################################################################
@@ -157,7 +154,8 @@ class Account(db.Model, PersistentBase):
     name = db.Column(db.String(64))
     email = db.Column(db.String(64))
     phone_number = db.Column(db.String(32), nullable=True)  # phone is optional
-    date_joined = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date_joined = db.Column(db.Date(), nullable=False, default=date.today())
+    # addresses = db.relationship("Address", backref="account", cascade="delete", lazy=True)
     addresses = db.relationship("Address", backref="account", lazy=True)
 
     def __repr__(self):
@@ -170,7 +168,7 @@ class Account(db.Model, PersistentBase):
             "name": self.name,
             "email": self.email,
             "phone_number": self.phone_number,
-            "date_joined": self.date_joined.strftime(DATETIME_FORMAT),
+            "date_joined": self.date_joined.isoformat(),
             "addresses": [],
         }
         for address in self.addresses:
@@ -188,7 +186,7 @@ class Account(db.Model, PersistentBase):
             self.name = data["name"]
             self.email = data["email"]
             self.phone_number = data.get("phone_number")
-            self.date_joined = datetime.strptime(data["date_joined"], DATETIME_FORMAT)
+            self.date_joined = date.fromisoformat(data["date_joined"])
             # handle inner list of addresses
             address_list = data.get("addresses")
             for json_address in address_list:

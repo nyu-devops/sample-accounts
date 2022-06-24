@@ -228,10 +228,13 @@ class TestAccount(unittest.TestCase):
         """It should Create an account with an address and add it to the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
-        account = self._create_account()
+        account = AccountFactory()
+        logging.debug("Account data: %s", account.serialize())
+        account.create()
+        logging.debug("Created: %s", account.serialize())
         address = self._create_address()
         account.addresses.append(address)
-        account.create()
+        account.update()
         # Assert that it was assigned an id and shows up in the database
         self.assertEqual(account.id, 1)
         accounts = Account.all()
