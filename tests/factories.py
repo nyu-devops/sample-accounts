@@ -16,8 +16,8 @@
 Test Factory to make fake objects for testing
 """
 import factory
-from datetime import datetime
-from factory.fuzzy import FuzzyChoice
+from datetime import date
+from factory.fuzzy import FuzzyChoice, FuzzyDate
 from service.models import Account, Address
 
 
@@ -46,4 +46,4 @@ class AccountFactory(factory.Factory):
     name = factory.Faker("name")
     email = factory.Faker("email")
     phone_number = factory.Faker("phone_number")
-    date_joined = factory.LazyFunction(datetime.utcnow)
+    date_joined = FuzzyDate(date(2008, 1, 1))

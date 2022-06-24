@@ -44,38 +44,6 @@ class TestAccount(unittest.TestCase):
         db.drop_all()
 
     ######################################################################
-    #  H E L P E R   M E T H O D S
-    ######################################################################
-
-    def _create_account(self, addresses=[]):
-        """It should Create an account from a Factory"""
-        fake_account = AccountFactory()
-        account = Account(
-            name=fake_account.name,
-            email=fake_account.email,
-            phone_number=fake_account.phone_number,
-            date_joined=fake_account.date_joined,
-            addresses=addresses,
-        )
-        self.assertTrue(account != None)
-        self.assertEqual(account.id, None)
-        return account
-
-    def _create_address(self):
-        """It should Create fake addresses from factory"""
-        fake_address = AddressFactory()
-        address = Address(
-            name=fake_address.name,
-            street=fake_address.street,
-            city=fake_address.city,
-            state=fake_address.state,
-            postalcode=fake_address.postalcode,
-        )
-        self.assertTrue(address != None)
-        self.assertEqual(address.id, None)
-        return address
-
-    ######################################################################
     #  T E S T   C A S E S
     ######################################################################
 
@@ -99,16 +67,16 @@ class TestAccount(unittest.TestCase):
         """It should Create an account and add it to the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
-        account = self._create_account()
+        account = AccountFactory()
         account.create()
         # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
+        self.assertIsNotNone(account.id)
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
 
     def test_read_account(self):
         """It should Read an account"""
-        account = self._create_account()
+        account = AccountFactory()
         account.create()
 
         # Read it back
@@ -121,10 +89,10 @@ class TestAccount(unittest.TestCase):
 
     def test_update_account(self):
         """It should Update an account"""
-        account = self._create_account()
+        account = AccountFactory()
         account.create()
         # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
+        self.assertIsNotNone(account.id)
 
         # Fetch it back
         account = Account.find(account.id)
@@ -139,10 +107,10 @@ class TestAccount(unittest.TestCase):
         """It should Delete an account from the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
-        account = self._create_account()
+        account = AccountFactory()
         account.create()
         # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
+        self.assertIsNotNone(account.id)
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
         account = accounts[0]
@@ -155,7 +123,7 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
         for _ in range(5):
-            account = self._create_account()
+            account = AccountFactory()
             account.create()
         # Assert that there are not 5 accounts in the database
         accounts = Account.all()
@@ -163,7 +131,7 @@ class TestAccount(unittest.TestCase):
 
     def test_find_by_name(self):
         """It should Find an Account by name"""
-        account = self._create_account()
+        account = AccountFactory()
         account.create()
 
         # Fetch it back by name
@@ -173,8 +141,9 @@ class TestAccount(unittest.TestCase):
 
     def test_serialize_an_account(self):
         """It should Serialize an account"""
-        address = self._create_address()
-        account = self._create_account(addresses=[address])
+        account = AccountFactory()
+        address = AddressFactory()
+        account.addresses.append(address)
         serial_account = account.serialize()
         self.assertEqual(serial_account["id"], account.id)
         self.assertEqual(serial_account["name"], account.name)
@@ -193,12 +162,12 @@ class TestAccount(unittest.TestCase):
 
     def test_deserialize_an_account(self):
         """It should Deserialize an account"""
-        address = self._create_address()
-        account = self._create_account(addresses=[address])
+        account = AccountFactory()
+        account.addresses.append(AddressFactory())
+        account.create()
         serial_account = account.serialize()
         new_account = Account()
         new_account.deserialize(serial_account)
-        self.assertEqual(new_account.id, account.id)
         self.assertEqual(new_account.name, account.name)
         self.assertEqual(new_account.email, account.email)
         self.assertEqual(new_account.phone_number, account.phone_number)
@@ -232,18 +201,18 @@ class TestAccount(unittest.TestCase):
         logging.debug("Account data: %s", account.serialize())
         account.create()
         logging.debug("Created: %s", account.serialize())
-        address = self._create_address()
+        address = AddressFactory()
         account.addresses.append(address)
         account.update()
         # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
+        self.assertIsNotNone(account.id)
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
 
         new_account = Account.find(account.id)
         self.assertEqual(account.addresses[0].name, address.name)
 
-        address2 = self._create_address()
+        address2 = AddressFactory()
         account.addresses.append(address2)
         account.update()
 
@@ -256,11 +225,12 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
-        address = self._create_address()
-        account = self._create_account(addresses=[address])
+        address = AddressFactory()
+        account = AccountFactory()
+        account.addresses.append(address)
         account.create()
         # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
+        self.assertIsNotNone(account.id)
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
 
@@ -282,11 +252,12 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
-        address = self._create_address()
-        account = self._create_account(addresses=[address])
+        address = AddressFactory()
+        account = AccountFactory()
+        account.addresses.append(address)
         account.create()
         # Assert that it was assigned an id and shows up in the database
-        self.assertEqual(account.id, 1)
+        self.assertIsNotNone(account.id)
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
 
