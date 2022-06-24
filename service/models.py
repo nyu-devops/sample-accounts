@@ -155,8 +155,8 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     phone_number = db.Column(db.String(32), nullable=True)  # phone is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
-    # addresses = db.relationship("Address", backref="account", cascade="delete", lazy=True)
-    addresses = db.relationship("Address", backref="account", lazy=True)
+    addresses = db.relationship("Address", backref="account", cascade="delete, merge, save-update", lazy=True)
+    # addresses = db.relationship("Address", backref="account", lazy=True)
 
     def __repr__(self):
         return "<Account %r id=[%s]>" % (self.name, self.id)

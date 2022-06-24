@@ -35,13 +35,13 @@ class TestAccount(unittest.TestCase):
 
     def setUp(self):
         """This runs before each test"""
-        db.drop_all()  # clean up the last tests
-        db.create_all()  # make our sqlalchemy tables
+        db.session.query(Address).delete()  # clean up the last tests
+        db.session.query(Account).delete()  # clean up the last tests
+        db.session.commit()
 
     def tearDown(self):
         """This runs after each test"""
         db.session.remove()
-        db.drop_all()
 
     ######################################################################
     #  T E S T   C A S E S
@@ -56,7 +56,7 @@ class TestAccount(unittest.TestCase):
             phone_number=fake_account.phone_number,
             date_joined=fake_account.date_joined,
         )
-        self.assertTrue(account != None)
+        self.assertIsNotNone(account)
         self.assertEqual(account.id, None)
         self.assertEqual(account.name, fake_account.name)
         self.assertEqual(account.email, fake_account.email)
@@ -198,12 +198,12 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = AccountFactory()
-        logging.debug("Account data: %s", account.serialize())
         account.create()
         logging.debug("Created: %s", account.serialize())
         address = AddressFactory()
         account.addresses.append(address)
         account.update()
+        logging.debug("Updated: %s", account.serialize())
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
         accounts = Account.all()
