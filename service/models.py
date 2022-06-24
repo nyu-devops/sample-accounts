@@ -83,7 +83,7 @@ class Address(db.Model, PersistentBase):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.Integer, db.ForeignKey("account.id"), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
     name = db.Column(db.String(64))  # e.g., work, home, vacation, etc.
     street = db.Column(db.String(64))
     city = db.Column(db.String(64))
@@ -158,8 +158,7 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     phone_number = db.Column(db.String(32), nullable=True)  # phone is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
-    addresses = db.relationship("Address", backref="account", cascade="delete, merge, save-update", lazy=True)
-    # addresses = db.relationship("Address", backref="account", lazy=True)
+    addresses = db.relationship("Address", backref="account", passive_deletes=True, lazy=True)
 
     def __repr__(self):
         return "<Account %r id=[%s]>" % (self.name, self.id)

@@ -11,7 +11,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from tests.factories import AccountFactory, AddressFactory
 from service.utils import status  # HTTP Status Codes
-from service.models import db, init_db
+from service.models import db, Account, init_db
 from service.routes import app
 
 DATABASE_URI = os.getenv(
@@ -42,14 +42,14 @@ class TestAccountService(TestCase):
 
     def setUp(self):
         """Runs before each test"""
-        db.drop_all()  # clean up the last tests
-        db.create_all()  # create new tables
+        db.session.query(Account).delete()  # clean up the last tests
+        db.session.commit()
+
         self.client = app.test_client()
 
     def tearDown(self):
         """Runs once after each test case"""
         db.session.remove()
-        db.drop_all()
 
     ######################################################################
     #  H E L P E R   M E T H O D S
