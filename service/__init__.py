@@ -28,7 +28,7 @@ app.config.from_object("config")
 
 # Import the routes After the Flask app is created
 # pylint: disable=wrong-import-position, cyclic-import, wrong-import-order
-from service import routes  # noqa: E402
+from service import routes, models  # noqa: E402
 
 # pylint: disable=wrong-import-position
 from service.utils import error_handlers, cli_commands  # noqa: F401 E402
@@ -41,7 +41,7 @@ app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "
 app.logger.info(70 * "*")
 
 try:
-    routes.init_db()  # make our database tables
+    models.init_db(app)  # make our database tables
 except Exception as error:
     app.logger.critical("%s: Cannot continue", error)
     # gunicorn requires exit code 4 to stop spawning workers when they die

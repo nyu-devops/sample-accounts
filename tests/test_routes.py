@@ -11,8 +11,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from tests.factories import AccountFactory, AddressFactory
 from service.utils import status  # HTTP Status Codes
-from service.models import db
-from service.routes import app, init_db
+from service.models import db, init_db
+from service.routes import app
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -33,7 +33,7 @@ class TestAccountService(TestCase):
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
-        init_db()
+        init_db(app)
 
     @classmethod
     def tearDownClass(cls):

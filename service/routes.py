@@ -270,12 +270,6 @@ def delete_addresses(account_id, address_id):
 ######################################################################
 
 
-def init_db():
-    """Initializes the SQLAlchemy app"""
-    global app
-    Account.init_db(app)
-
-
 def check_content_type(media_type):
     """Checks that the media type is correct"""
     content_type = request.headers.get("Content-Type")
