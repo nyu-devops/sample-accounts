@@ -15,7 +15,7 @@ db = SQLAlchemy()
 
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
-    pass
+
 
 def init_db(app):
     """Initialize the SQLAlchemy app"""
@@ -27,6 +27,9 @@ def init_db(app):
 ######################################################################
 class PersistentBase:
     """Base class added persistent methods"""
+
+    def __init__(self):
+        self.id = None  # pylint: disable=invalid-name
 
     def create(self):
         """
@@ -89,22 +92,13 @@ class Address(db.Model, PersistentBase):
     city = db.Column(db.String(64))
     state = db.Column(db.String(2))
     postalcode = db.Column(db.String(16))
+    account = db.relationship('Account', back_populates='addresses')
 
     def __repr__(self):
-        return "<Address %r id=[%s] account[%s]>" % (
-            self.name,
-            self.id,
-            self.account_id,
-        )
+        return f"<Address {self.name} id=[{self.id}] account[{self.account_id}]>"
 
     def __str__(self):
-        return "%s: %s, %s, %s %s" % (
-            self.name,
-            self.street,
-            self.city,
-            self.state,
-            self.postalcode,
-        )
+        return f"{self.name}: {self.street}, {self.city}, {self.state} {self.postalcode}"
 
     def serialize(self):
         """Serializes a Address into a dictionary"""
@@ -115,7 +109,7 @@ class Address(db.Model, PersistentBase):
             "street": self.street,
             "city": self.city,
             "state": self.state,
-            "postalcode": self.postalcode,
+            "postalcode": self.postalcode
         }
 
     def deserialize(self, data):
@@ -133,12 +127,12 @@ class Address(db.Model, PersistentBase):
             self.state = data["state"]
             self.postalcode = data["postalcode"]
         except KeyError as error:
-            raise DataValidationError("Invalid Address: missing " + error.args[0])
+            raise DataValidationError("Invalid Address: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
                 "Invalid Address: body of request contained "
                 "bad or no data " + error.args[0]
-            )
+            ) from error
         return self
 
 
@@ -156,12 +150,12 @@ class Account(db.Model, PersistentBase):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     email = db.Column(db.String(64))
-    phone_number = db.Column(db.String(32), nullable=True)  # phone is optional
+    phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
-    addresses = db.relationship("Address", backref="account", passive_deletes=True, lazy=True)
+    addresses = db.relationship('Address', back_populates='account', passive_deletes=True)
 
     def __repr__(self):
-        return "<Account %r id=[%s]>" % (self.name, self.id)
+        return f"<Account {self.name} id=[{self.id}]>"
 
     def serialize(self):
         """Serializes a Account into a dictionary"""
@@ -196,12 +190,12 @@ class Account(db.Model, PersistentBase):
                 address.deserialize(json_address)
                 self.addresses.append(address)
         except KeyError as error:
-            raise DataValidationError("Invalid Account: missing " + error.args[0])
+            raise DataValidationError("Invalid Account: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
                 "Invalid Account: body of request contained "
                 "bad or no data - " + error.args[0]
-            )
+            ) from error
         return self
 
     @classmethod

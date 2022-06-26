@@ -22,6 +22,29 @@ from factory.fuzzy import FuzzyChoice, FuzzyDate
 from service.models import Account, Address
 
 
+class AccountFactory(factory.Factory):
+    """Creates fake Accounts"""
+
+    class Meta:
+        model = Account
+
+    id = factory.Sequence(lambda n: n)
+    name = factory.Faker("name")
+    email = factory.Faker("email")
+    phone_number = factory.Faker("phone_number")
+    date_joined = FuzzyDate(date(2008, 1, 1))
+    # the many side of relationships can be a little wonky in factory boy: 
+    # https://factoryboy.readthedocs.io/en/latest/recipes.html#simple-many-to-many-relationship
+    @factory.post_generation
+    def addresses(self, create, extracted, **kwargs):
+        """Creates the addresses list"""
+        if not create:
+            return
+
+        if extracted:
+            self.addresses = extracted
+
+
 class AddressFactory(factory.Factory):
     """Creates fake Addresses"""
 
@@ -35,18 +58,4 @@ class AddressFactory(factory.Factory):
     city = factory.Faker("city")
     state = factory.Faker("state_abbr")
     postalcode = factory.Faker("postalcode")
-
-
-class AccountFactory(factory.Factory):
-    """Creates fake Accounts"""
-
-    class Meta:
-        model = Account
-
-    id = factory.Sequence(lambda n: n)
-    name = factory.Faker("name")
-    email = factory.Faker("email")
-    phone_number = factory.Faker("phone_number")
-    date_joined = FuzzyDate(date(2008, 1, 1))
-    # Thus next line doesn't seem to work :(
-    addresses = factory.RelatedFactoryList(AddressFactory, factory_related_name='account_id', size=lambda: random.randint(1, 5))
+    account = factory.SubFactory(AccountFactory)

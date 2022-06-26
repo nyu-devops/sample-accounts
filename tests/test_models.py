@@ -123,8 +123,7 @@ class TestAccount(unittest.TestCase):
         """It should List all Accounts in the database"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
-        for _ in range(5):
-            account = AccountFactory()
+        for account in AccountFactory.create_batch(5):
             account.create()
         # Assert that there are not 5 accounts in the database
         accounts = Account.all()
@@ -199,36 +198,31 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
         account = AccountFactory()
+        address = AddressFactory(account=account)
         account.create()
-        logging.debug("Created: %s", account.serialize())
-        address = AddressFactory()
-        account.addresses.append(address)
-        account.update()
-        logging.debug("Updated: %s", account.serialize())
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
         accounts = Account.all()
         self.assertEqual(len(accounts), 1)
 
         new_account = Account.find(account.id)
-        self.assertEqual(account.addresses[0].name, address.name)
+        self.assertEqual(new_account.addresses[0].name, address.name)
 
         address2 = AddressFactory()
         account.addresses.append(address2)
         account.update()
 
         new_account = Account.find(account.id)
-        self.assertEqual(len(account.addresses), 2)
-        self.assertEqual(account.addresses[1].name, address2.name)
+        self.assertEqual(len(new_account.addresses), 2)
+        self.assertEqual(new_account.addresses[1].name, address2.name)
 
     def test_update_account_address(self):
         """It should Update an accounts address"""
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
-        address = AddressFactory()
         account = AccountFactory()
-        account.addresses.append(address)
+        address = AddressFactory(account=account)
         account.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
@@ -238,8 +232,9 @@ class TestAccount(unittest.TestCase):
         # Fetch it back
         account = Account.find(account.id)
         old_address = account.addresses[0]
+        print("%r", old_address)
         self.assertEqual(old_address.city, address.city)
-
+        # Change the city
         old_address.city = "XX"
         account.update()
 
@@ -253,9 +248,8 @@ class TestAccount(unittest.TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
-        address = AddressFactory()
         account = AccountFactory()
-        account.addresses.append(address)
+        address = AddressFactory(account=account)
         account.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
