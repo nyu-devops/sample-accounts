@@ -92,7 +92,6 @@ class Address(db.Model, PersistentBase):
     city = db.Column(db.String(64))
     state = db.Column(db.String(2))
     postalcode = db.Column(db.String(16))
-    account = db.relationship('Account', back_populates='addresses')
 
     def __repr__(self):
         return f"<Address {self.name} id=[{self.id}] account[{self.account_id}]>"
@@ -152,7 +151,7 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
-    addresses = db.relationship('Address', back_populates='account', passive_deletes=True)
+    addresses = db.relationship("Address", backref="account", passive_deletes=True)
 
     def __repr__(self):
         return f"<Account {self.name} id=[{self.id}]>"
