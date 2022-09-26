@@ -199,6 +199,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(accounts, [])
         account = AccountFactory()
         address = AddressFactory(account=account)
+        account.addresses.append(address)
         account.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)

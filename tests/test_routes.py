@@ -10,7 +10,7 @@ import logging
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from tests.factories import AccountFactory, AddressFactory
-from service.utils import status  # HTTP Status Codes
+from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
 
