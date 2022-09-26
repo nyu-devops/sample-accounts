@@ -33,7 +33,7 @@ class AccountFactory(factory.Factory):
     email = factory.Faker("email")
     phone_number = factory.Faker("phone_number")
     date_joined = FuzzyDate(date(2008, 1, 1))
-    # the many side of relationships can be a little wonky in factory boy: 
+    # the many side of relationships can be a little wonky in factory boy:
     # https://factoryboy.readthedocs.io/en/latest/recipes.html#simple-many-to-many-relationship
     @factory.post_generation
     def addresses(self, create, extracted, **kwargs):
