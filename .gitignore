@@ -8,10 +8,17 @@ Thumbs.db
 # Vagrant
 .vagrant
 
+# Test reports
+unittests.xml
+
 # databases
 *.db
 db/*
 !db/.keep
+
+# SonarQube Reports
+.scannerwork/
+.sonarlint/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
