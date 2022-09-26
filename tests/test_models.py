@@ -36,6 +36,7 @@ class TestAccount(unittest.TestCase):
     def setUp(self):
         """This runs before each test"""
         db.session.query(Account).delete()  # clean up the last tests
+        db.session.query(Address).delete()  # clean up the last tests
         db.session.commit()
 
     def tearDown(self):
