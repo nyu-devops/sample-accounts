@@ -13,6 +13,7 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
+
 ######################################################################
 #  Account   M O D E L   T E S T   C A S E S
 ######################################################################
@@ -31,11 +32,11 @@ class TestAccount(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """This runs once after the entire test suite"""
-        pass
 
     def setUp(self):
         """This runs before each test"""
         db.session.query(Account).delete()  # clean up the last tests
+        db.session.query(Address).delete()  # clean up the last tests
         db.session.commit()
 
     def tearDown(self):
@@ -49,6 +50,7 @@ class TestAccount(unittest.TestCase):
     def test_create_an_account(self):
         """It should Create an Account and assert that it exists"""
         fake_account = AccountFactory()
+        # pylint: disable=unexpected-keyword-arg
         account = Account(
             name=fake_account.name,
             email=fake_account.email,
@@ -199,6 +201,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(accounts, [])
         account = AccountFactory()
         address = AddressFactory(account=account)
+        account.addresses.append(address)
         account.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
@@ -208,7 +211,7 @@ class TestAccount(unittest.TestCase):
         new_account = Account.find(account.id)
         self.assertEqual(new_account.addresses[0].name, address.name)
 
-        address2 = AddressFactory()
+        address2 = AddressFactory(account=account)
         account.addresses.append(address2)
         account.update()
 

@@ -1,6 +1,9 @@
 # Accounts Service
 
+[![Build Status](https://github.com/nyu-devops/sample-accounts/actions/workflows/ci.yml/badge.svg)](https://github.com/nyu-devops/sample-accounts/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-red.svg)](https://www.python.org/)
+
 
 This repository contains sample code for Customer accounts for an e-commerce web site. This shows how to create a REST API with subordinate resources like accounts that have addresses:
 

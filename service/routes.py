@@ -19,7 +19,7 @@ This microservice handles the lifecycle of Accounts
 """
 from flask import jsonify, request, url_for, make_response, abort
 from service.models import Account, Address
-from service.utils import status  # HTTP Status Codes
+from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
 
 

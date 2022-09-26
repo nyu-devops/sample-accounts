@@ -1,0 +1,72 @@
+name: CI Build
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+    - 'README.md'
+
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+    - 'README.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # use a known build environment
+    container: python:3.9-slim
+
+    # Required services    
+    services:
+      # Label used to access the service container
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: pgs3cr3t
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # Steps for the build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Install libraries for PostgreSQL
+        run: |
+          apt-get update
+          apt-get install -y gcc libpq-dev
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Linting
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+          # Run pylint on the service
+          pylint service --max-line-length 127
+
+      - name: Run unit tests with nose
+        run: |
+          export FLASK_APP=service:app
+          nosetests
+        env:
+          DATABASE_URI: "postgresql://postgres:pgs3cr3t@postgres:5432/testdb"
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v2 
+        with:
+          version: "v0.1.13"   

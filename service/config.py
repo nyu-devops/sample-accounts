@@ -2,7 +2,6 @@
 Global Configuration for Application
 """
 import os
-import logging
 
 
 # Get configuration from environment

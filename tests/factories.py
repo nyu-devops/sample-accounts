@@ -15,9 +15,8 @@
 """
 Test Factory to make fake objects for testing
 """
-import factory
-import random
 from datetime import date
+import factory
 from factory.fuzzy import FuzzyChoice, FuzzyDate
 from service.models import Account, Address
 
@@ -25,7 +24,9 @@ from service.models import Account, Address
 class AccountFactory(factory.Factory):
     """Creates fake Accounts"""
 
+    # pylint: disable=too-few-public-methods
     class Meta:
+        """Persistent class"""
         model = Account
 
     id = factory.Sequence(lambda n: n)
@@ -33,10 +34,11 @@ class AccountFactory(factory.Factory):
     email = factory.Faker("email")
     phone_number = factory.Faker("phone_number")
     date_joined = FuzzyDate(date(2008, 1, 1))
-    # the many side of relationships can be a little wonky in factory boy: 
+    # the many side of relationships can be a little wonky in factory boy:
     # https://factoryboy.readthedocs.io/en/latest/recipes.html#simple-many-to-many-relationship
+
     @factory.post_generation
-    def addresses(self, create, extracted, **kwargs):
+    def addresses(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
         """Creates the addresses list"""
         if not create:
             return
@@ -48,7 +50,9 @@ class AccountFactory(factory.Factory):
 class AddressFactory(factory.Factory):
     """Creates fake Addresses"""
 
+    # pylint: disable=too-few-public-methods
     class Meta:
+        """Persistent class"""
         model = Address
 
     id = factory.Sequence(lambda n: n)
