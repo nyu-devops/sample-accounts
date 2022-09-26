@@ -8,7 +8,6 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 from tests.factories import AccountFactory, AddressFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
@@ -38,7 +37,6 @@ class TestAccountService(TestCase):
     @classmethod
     def tearDownClass(cls):
         """Runs once before test suite"""
-        pass
 
     def setUp(self):
         """Runs before each test"""
@@ -183,7 +181,6 @@ class TestAccountService(TestCase):
 
     def test_bad_request(self):
         """It should not Create when sending the wrong data"""
-        account = AccountFactory()
         resp = self.client.post(BASE_URL, json={"name": "not enough data"})
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
