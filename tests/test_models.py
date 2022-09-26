@@ -211,7 +211,7 @@ class TestAccount(unittest.TestCase):
         new_account = Account.find(account.id)
         self.assertEqual(new_account.addresses[0].name, address.name)
 
-        address2 = AddressFactory()
+        address2 = AddressFactory(account=account)
         account.addresses.append(address2)
         account.update()
 
