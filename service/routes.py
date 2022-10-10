@@ -47,13 +47,17 @@ def list_accounts():
     """Returns all of the Accounts"""
     app.logger.info("Request for Account list")
     accounts = []
+
+    # Process the query string if any
     name = request.args.get("name")
     if name:
         accounts = Account.find_by_name(name)
     else:
         accounts = Account.all()
 
+    # Return as an array of dictionaries
     results = [account.serialize() for account in accounts]
+
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 
@@ -68,6 +72,8 @@ def get_accounts(account_id):
     This endpoint will return an Account based on it's id
     """
     app.logger.info("Request for Account with id: %s", account_id)
+
+    # See if the account exists and abort if it doesn't
     account = Account.find(account_id)
     if not account:
         abort(
@@ -89,11 +95,16 @@ def create_accounts():
     """
     app.logger.info("Request to create an Account")
     check_content_type("application/json")
+
+    # Create the account
     account = Account()
     account.deserialize(request.get_json())
     account.create()
+
+    # Create a message to return
     message = account.serialize()
     location_url = url_for("get_accounts", account_id=account.id, _external=True)
+
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
@@ -111,15 +122,19 @@ def update_accounts(account_id):
     """
     app.logger.info("Request to update account with id: %s", account_id)
     check_content_type("application/json")
+
+    # See if the account exists and abort if it doesn't
     account = Account.find(account_id)
     if not account:
         abort(
             status.HTTP_404_NOT_FOUND, f"Account with id '{account_id}' was not found."
         )
 
+    # Update from the json in the body of the request
     account.deserialize(request.get_json())
     account.id = account_id
     account.update()
+
     return make_response(jsonify(account.serialize()), status.HTTP_200_OK)
 
 
@@ -134,9 +149,12 @@ def delete_accounts(account_id):
     This endpoint will delete an Account based the id specified in the path
     """
     app.logger.info("Request to delete account with id: %s", account_id)
+
+    # Retrieve the account to delete and delete it if it exists
     account = Account.find(account_id)
     if account:
         account.delete()
+
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
@@ -153,6 +171,7 @@ def list_addresses(account_id):
     """Returns all of the Addresses for an Account"""
     app.logger.info("Request for all Addresses for Account with id: %s", account_id)
 
+    # See if the account exists and abort if it doesn't
     account = Account.find(account_id)
     if not account:
         abort(
@@ -160,7 +179,9 @@ def list_addresses(account_id):
             f"Account with id '{account_id}' could not be found.",
         )
 
+    # Get the addresses for the account
     results = [address.serialize() for address in account.addresses]
+
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 
@@ -177,6 +198,7 @@ def create_addresses(account_id):
     app.logger.info("Request to create an Address for Account with id: %s", account_id)
     check_content_type("application/json")
 
+    # See if the account exists and abort if it doesn't
     account = Account.find(account_id)
     if not account:
         abort(
@@ -184,11 +206,17 @@ def create_addresses(account_id):
             f"Account with id '{account_id}' could not be found.",
         )
 
+    # Create an address from the json data
     address = Address()
     address.deserialize(request.get_json())
+
+    # Append the address to the account
     account.addresses.append(address)
     account.update()
+
+    # Prepare a message to return
     message = address.serialize()
+
     return make_response(jsonify(message), status.HTTP_201_CREATED)
 
 
@@ -206,6 +234,7 @@ def get_addresses(account_id, address_id):
         "Request to retrieve Address %s for Account id: %s", (address_id, account_id)
     )
 
+    # See if the address exists and abort if it doesn't
     address = Address.find(address_id)
     if not address:
         abort(
@@ -231,6 +260,7 @@ def update_addresses(account_id, address_id):
     )
     check_content_type("application/json")
 
+    # See if the address exists and abort if it doesn't
     address = Address.find(address_id)
     if not address:
         abort(
@@ -238,9 +268,11 @@ def update_addresses(account_id, address_id):
             f"Account with id '{address_id}' could not be found.",
         )
 
+    # Update from the json in the body of the request
     address.deserialize(request.get_json())
     address.id = address_id
     address.update()
+
     return make_response(jsonify(address.serialize()), status.HTTP_200_OK)
 
 
@@ -258,6 +290,7 @@ def delete_addresses(account_id, address_id):
         "Request to delete Address %s for Account id: %s", (address_id, account_id)
     )
 
+    # See if the address exists and delete it if it does
     address = Address.find(address_id)
     if address:
         address.delete()
