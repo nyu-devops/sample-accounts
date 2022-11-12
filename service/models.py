@@ -5,6 +5,7 @@ All of the models are stored in this module
 """
 import logging
 from datetime import date
+from abc import abstractmethod
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -30,6 +31,14 @@ class PersistentBase:
 
     def __init__(self):
         self.id = None  # pylint: disable=invalid-name
+
+    @abstractmethod
+    def serialize(self) -> dict:
+        """Convert an object into a dictionary"""
+
+    @abstractmethod
+    def deserialize(self, data: dict) -> None:
+        """Convert a dictionary into an object"""
 
     def create(self):
         """
@@ -91,16 +100,16 @@ class Address(db.Model, PersistentBase):
     street = db.Column(db.String(64))
     city = db.Column(db.String(64))
     state = db.Column(db.String(2))
-    postalcode = db.Column(db.String(16))
+    postal_code = db.Column(db.String(16))
 
     def __repr__(self):
         return f"<Address {self.name} id=[{self.id}] account[{self.account_id}]>"
 
     def __str__(self):
-        return f"{self.name}: {self.street}, {self.city}, {self.state} {self.postalcode}"
+        return f"{self.name}: {self.street}, {self.city}, {self.state} {self.postal_code}"
 
-    def serialize(self):
-        """Serializes a Address into a dictionary"""
+    def serialize(self) -> dict:
+        """Converts an Address into a dictionary"""
         return {
             "id": self.id,
             "account_id": self.account_id,
@@ -108,12 +117,12 @@ class Address(db.Model, PersistentBase):
             "street": self.street,
             "city": self.city,
             "state": self.state,
-            "postalcode": self.postalcode
+            "postal_code": self.postal_code
         }
 
-    def deserialize(self, data):
+    def deserialize(self, data: dict) -> None:
         """
-        Deserializes a Address from a dictionary
+        Populates an Address from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data
@@ -124,7 +133,7 @@ class Address(db.Model, PersistentBase):
             self.street = data["street"]
             self.city = data["city"]
             self.state = data["state"]
-            self.postalcode = data["postalcode"]
+            self.postal_code = data["postal_code"]
         except KeyError as error:
             raise DataValidationError("Invalid Address: missing " + error.args[0]) from error
         except TypeError as error:
@@ -157,7 +166,7 @@ class Account(db.Model, PersistentBase):
         return f"<Account {self.name} id=[{self.id}]>"
 
     def serialize(self):
-        """Serializes a Account into a dictionary"""
+        """Converts an Account into a dictionary"""
         account = {
             "id": self.id,
             "name": self.name,
@@ -172,7 +181,7 @@ class Account(db.Model, PersistentBase):
 
     def deserialize(self, data):
         """
-        Deserializes a Account from a dictionary
+        Populates an Account from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data

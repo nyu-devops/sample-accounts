@@ -61,5 +61,5 @@ class AddressFactory(factory.Factory):
     street = factory.Faker("street_address")
     city = factory.Faker("city")
     state = factory.Faker("state_abbr")
-    postalcode = factory.Faker("postalcode")
+    postal_code = factory.Faker("postalcode")
     account = factory.SubFactory(AccountFactory)

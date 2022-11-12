@@ -243,7 +243,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data["street"], address.street)
         self.assertEqual(data["city"], address.city)
         self.assertEqual(data["state"], address.state)
-        self.assertEqual(data["postalcode"], address.postalcode)
+        self.assertEqual(data["postal_code"], address.postal_code)
 
     def test_get_address(self):
         """It should Get an address from an account"""
@@ -275,7 +275,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data["street"], address.street)
         self.assertEqual(data["city"], address.city)
         self.assertEqual(data["state"], address.state)
-        self.assertEqual(data["postalcode"], address.postalcode)
+        self.assertEqual(data["postal_code"], address.postal_code)
 
     def test_update_address(self):
         """It should Update an address on an account"""

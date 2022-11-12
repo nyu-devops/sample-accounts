@@ -160,7 +160,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(addresses[0]["street"], address.street)
         self.assertEqual(addresses[0]["city"], address.city)
         self.assertEqual(addresses[0]["state"], address.state)
-        self.assertEqual(addresses[0]["postalcode"], address.postalcode)
+        self.assertEqual(addresses[0]["postal_code"], address.postal_code)
 
     def test_deserialize_an_account(self):
         """It should Deserialize an account"""
