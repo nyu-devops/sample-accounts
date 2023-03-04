@@ -14,7 +14,7 @@ services:
     command: sleep infinity
     environment:
       FLASK_APP: service:app
-      FLASK_ENV: development
+      FLASK_DEBUG: "true"
       GUNICORN_BIND: "0.0.0.0:8000"
       DATABASE_URI: postgresql://postgres:postgres@postgres:5432/postgres
     networks:
