@@ -1,3 +1,4 @@
+######################################################################
 # Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+######################################################################
 
 """
 Account Service
@@ -309,6 +311,7 @@ def delete_addresses(account_id, address_id):
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
+
 def check_content_type(content_type):
     """Checks that the media type is correct"""
     if "Content-Type" not in request.headers:
@@ -323,6 +326,5 @@ def check_content_type(content_type):
 
     app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
     abort(
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        f"Content-Type must be {content_type}"
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, f"Content-Type must be {content_type}"
     )

@@ -1,3 +1,4 @@
+######################################################################
 # Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+######################################################################
 
 """
 Package: service
@@ -36,6 +38,7 @@ def create_app():
     # Initialize Plugins
     # pylint: disable=import-outside-toplevel
     from service.models import db
+
     db.init_app(app)
 
     with app.app_context():
@@ -55,7 +58,9 @@ def create_app():
         log_handlers.init_logging(app, "gunicorn.error")
 
         app.logger.info(70 * "*")
-        app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*"))
+        app.logger.info(
+            "  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*")
+        )
         app.logger.info(70 * "*")
 
         app.logger.info("Service initialized!")
