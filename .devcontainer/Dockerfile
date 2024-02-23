@@ -1,7 +1,9 @@
-FROM rofrano/nyu-devops-base:sp23
+# Image for a NYU Lab development environment
+FROM rofrano/nyu-devops-base:sp24
 
-# Add Python package requiremnets to the dev environment
+# Set up the Python development environment
 WORKDIR /app
-COPY requirements.txt .
-RUN sudo pip install -U pip wheel && \
-    sudo pip install -r requirements.txt
+COPY pyproject.toml poetry.lock ./
+RUN sudo python -m pip install --upgrade pip poetry && \
+    sudo poetry config virtualenvs.create false && \
+    sudo poetry install

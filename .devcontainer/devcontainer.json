@@ -7,26 +7,50 @@
 	"remoteUser": "vscode",
 	"customizations": {
 		"vscode": {
+			"settings": {
+				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
+					"editor.formatOnSave": true
+				},
+				"markdown-preview-github-styles.colorTheme": "light",
+				"makefile.extensionOutputFolder": "/tmp",
+				"python.testing.unittestEnabled": false,
+				"python.testing.pytestEnabled": true,			
+				"python.testing.pytestArgs": [
+					"tests"
+				],
+				"files.exclude": {
+					"**/.git": true,
+					"**/.DS_Store": true,
+					"**/*.pyc": true,
+					"**/__pycache__": true,
+					"**/.pytest_cache": true
+				}
+			},
 			"extensions": [
-				"VisualStudioExptTeam.vscodeintellicode",
 				"ms-python.python",
 				"ms-python.pylint",
 				"ms-python.vscode-pylance",
-				"alexkrechik.cucumberautocomplete",
-				"cstrap.flask-snippets",
+				"ms-python.flake8",
+				"ms-python.black-formatter",
+				"ms-vscode.makefile-tools",
 				"yzhang.markdown-all-in-one",
-				"bierner.github-markdown-preview",
 				"hnw.vscode-auto-open-markdown-preview",
-				"DavidAnson.vscode-markdownlint",
+				"davidanson.vscode-markdownlint",
+				"bierner.markdown-preview-github-styles",
+				"tamasfe.even-better-toml",
 				"donjayamanne.githistory",
 				"GitHub.vscode-pull-request-github",
+				"github.vscode-github-actions",
 				"hbenl.vscode-test-explorer",
 				"LittleFoxTeam.vscode-python-test-adapter",
 				"njpwerner.autodocstring",
-				"redhat.vscode-yaml",
-				"streetsidesoftware.code-spell-checker",
 				"wholroyd.jinja",
-				"bbenoist.vagrant"		
+				"redhat.vscode-yaml",
+				"ms-azuretools.vscode-docker",
+				"rangav.vscode-thunder-client",
+				"bbenoist.vagrant",
+				"streetsidesoftware.code-spell-checker"
 			]
 		}
 	}
