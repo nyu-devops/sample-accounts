@@ -5,12 +5,12 @@ Test cases for Account Model
 import logging
 import unittest
 import os
-from service import app
+from wsgi import app
 from service.models import Account, Address, DataValidationError, db
 from tests.factories import AccountFactory, AddressFactory
 
 DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+    "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/postgres"
 )
 
 
@@ -27,11 +27,12 @@ class TestAccount(unittest.TestCase):
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
-        Account.init_db(app)
+        app.app_context().push()
 
     @classmethod
     def tearDownClass(cls):
         """This runs once after the entire test suite"""
+        db.session.close()
 
     def setUp(self):
         """This runs before each test"""

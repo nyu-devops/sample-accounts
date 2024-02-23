@@ -1,2 +1,2 @@
 # Copy this file to .env to expose these environment variables
-FLASK_APP=service:app
+FLASK_APP=wsgi:app

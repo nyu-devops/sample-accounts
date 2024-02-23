@@ -1,4 +1,4 @@
-# Copyright 2016, 2022 John J. Rofrano. All Rights Reserved.
+# Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,19 @@ Account Service
 
 This microservice handles the lifecycle of Accounts
 """
-from flask import jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, url_for, abort
+from flask import current_app as app  # Import Flask application
 from service.models import Account, Address
 from service.common import status  # HTTP Status Codes
-from . import app  # Import Flask application
+
+
+######################################################################
+# GET HEALTH CHECK
+######################################################################
+@app.route("/health")
+def health_check():
+    """Let them know our heart is still beating"""
+    return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
 
 
 ######################################################################
@@ -58,7 +67,7 @@ def list_accounts():
     # Return as an array of dictionaries
     results = [account.serialize() for account in accounts]
 
-    return make_response(jsonify(results), status.HTTP_200_OK)
+    return jsonify(results), status.HTTP_200_OK
 
 
 ######################################################################
@@ -81,7 +90,7 @@ def get_accounts(account_id):
             f"Account with id '{account_id}' could not be found.",
         )
 
-    return make_response(jsonify(account.serialize()), status.HTTP_200_OK)
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -105,9 +114,7 @@ def create_accounts():
     message = account.serialize()
     location_url = url_for("get_accounts", account_id=account.id, _external=True)
 
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    )
+    return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
@@ -135,7 +142,7 @@ def update_accounts(account_id):
     account.id = account_id
     account.update()
 
-    return make_response(jsonify(account.serialize()), status.HTTP_200_OK)
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -155,7 +162,7 @@ def delete_accounts(account_id):
     if account:
         account.delete()
 
-    return make_response("", status.HTTP_204_NO_CONTENT)
+    return "", status.HTTP_204_NO_CONTENT
 
 
 # ---------------------------------------------------------------------
@@ -182,7 +189,7 @@ def list_addresses(account_id):
     # Get the addresses for the account
     results = [address.serialize() for address in account.addresses]
 
-    return make_response(jsonify(results), status.HTTP_200_OK)
+    return jsonify(results), status.HTTP_200_OK
 
 
 ######################################################################
@@ -217,7 +224,7 @@ def create_addresses(account_id):
     # Prepare a message to return
     message = address.serialize()
 
-    return make_response(jsonify(message), status.HTTP_201_CREATED)
+    return jsonify(message), status.HTTP_201_CREATED
 
 
 ######################################################################
@@ -242,7 +249,7 @@ def get_addresses(account_id, address_id):
             f"Account with id '{address_id}' could not be found.",
         )
 
-    return make_response(jsonify(address.serialize()), status.HTTP_200_OK)
+    return jsonify(address.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -273,7 +280,7 @@ def update_addresses(account_id, address_id):
     address.id = address_id
     address.update()
 
-    return make_response(jsonify(address.serialize()), status.HTTP_200_OK)
+    return jsonify(address.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -295,21 +302,27 @@ def delete_addresses(account_id, address_id):
     if address:
         address.delete()
 
-    return make_response("", status.HTTP_204_NO_CONTENT)
+    return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
-
-def check_content_type(media_type):
+def check_content_type(content_type):
     """Checks that the media type is correct"""
-    content_type = request.headers.get("Content-Type")
-    if content_type and content_type == media_type:
+    if "Content-Type" not in request.headers:
+        app.logger.error("No Content-Type specified.")
+        abort(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {content_type}",
+        )
+
+    if request.headers["Content-Type"] == content_type:
         return
-    app.logger.error("Invalid Content-Type: %s", content_type)
+
+    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
     abort(
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        f"Content-Type must be {media_type}",
+        f"Content-Type must be {content_type}"
     )

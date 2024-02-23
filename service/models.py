@@ -3,6 +3,7 @@ Models for Account
 
 All of the models are stored in this module
 """
+
 import logging
 from datetime import date
 from abc import abstractmethod
@@ -16,11 +17,6 @@ db = SQLAlchemy()
 
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
-
-
-def init_db(app):
-    """Initialize the SQLAlchemy app"""
-    Account.init_db(app)
 
 
 ######################################################################
@@ -40,49 +36,59 @@ class PersistentBase:
     def deserialize(self, data: dict) -> None:
         """Convert a dictionary into an object"""
 
-    def create(self):
+    def create(self) -> None:
         """
         Creates a Account to the database
         """
-        logger.info("Creating %s", self.name)
-        self.id = None  # id must be none to generate next primary key
-        db.session.add(self)
-        db.session.commit()
+        logger.info("Creating %s", self)
+        # id must be none to generate next primary key
+        self.id = None
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error creating record: %s", self)
+            raise DataValidationError(e) from e
 
-    def update(self):
+    def update(self) -> None:
         """
         Updates a Account to the database
         """
-        logger.info("Updating %s", self.name)
-        db.session.commit()
+        logger.info("Updating %s", self)
+        if not self.id:
+            raise DataValidationError("Update called with empty ID field")
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error updating record: %s", self)
+            raise DataValidationError(e) from e
 
-    def delete(self):
+    def delete(self) -> None:
         """Removes a Account from the data store"""
-        logger.info("Deleting %s", self.name)
-        db.session.delete(self)
-        db.session.commit()
-
-    @classmethod
-    def init_db(cls, app):
-        """Initializes the database session"""
-        logger.info("Initializing database")
-        cls.app = app
-        # This is where we initialize SQLAlchemy from the Flask app
-        db.init_app(app)
-        app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
+        logger.info("Deleting %s", self)
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error deleting record: %s", self)
+            raise DataValidationError(e) from e
 
     @classmethod
     def all(cls):
         """Returns all of the records in the database"""
         logger.info("Processing all records")
+        # pylint: disable=no-member
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
         """Finds a record by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
-        return cls.query.get(by_id)
+        # pylint: disable=no-member
+        return cls.query.session.get(cls, by_id)
 
 
 ######################################################################
@@ -95,7 +101,9 @@ class Address(db.Model, PersistentBase):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.Integer, db.ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
+    account_id = db.Column(
+        db.Integer, db.ForeignKey("account.id", ondelete="CASCADE"), nullable=False
+    )
     name = db.Column(db.String(64))  # e.g., work, home, vacation, etc.
     street = db.Column(db.String(64))
     city = db.Column(db.String(64))
@@ -106,7 +114,9 @@ class Address(db.Model, PersistentBase):
         return f"<Address {self.name} id=[{self.id}] account[{self.account_id}]>"
 
     def __str__(self):
-        return f"{self.name}: {self.street}, {self.city}, {self.state} {self.postal_code}"
+        return (
+            f"{self.name}: {self.street}, {self.city}, {self.state} {self.postal_code}"
+        )
 
     def serialize(self) -> dict:
         """Converts an Address into a dictionary"""
@@ -117,7 +127,7 @@ class Address(db.Model, PersistentBase):
             "street": self.street,
             "city": self.city,
             "state": self.state,
-            "postal_code": self.postal_code
+            "postal_code": self.postal_code,
         }
 
     def deserialize(self, data: dict) -> None:
@@ -134,13 +144,18 @@ class Address(db.Model, PersistentBase):
             self.city = data["city"]
             self.state = data["state"]
             self.postal_code = data["postal_code"]
+        except AttributeError as error:
+            raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
-            raise DataValidationError("Invalid Address: missing " + error.args[0]) from error
+            raise DataValidationError(
+                "Invalid Address: missing " + error.args[0]
+            ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Address: body of request contained "
-                "bad or no data " + error.args[0]
+                "Invalid Address: body of request contained bad or no data "
+                + str(error)
             ) from error
+
         return self
 
 
@@ -151,8 +166,6 @@ class Account(db.Model, PersistentBase):
     """
     Class that represents an Account
     """
-
-    app = None
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
@@ -197,13 +210,18 @@ class Account(db.Model, PersistentBase):
                 address = Address()
                 address.deserialize(json_address)
                 self.addresses.append(address)
+        except AttributeError as error:
+            raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
-            raise DataValidationError("Invalid Account: missing " + error.args[0]) from error
+            raise DataValidationError(
+                "Invalid Account: missing " + error.args[0]
+            ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Account: body of request contained "
-                "bad or no data - " + error.args[0]
+                "Invalid Account: body of request contained bad or no data "
+                + str(error)
             ) from error
+
         return self
 
     @classmethod

@@ -1,23 +1,20 @@
 """
-<your resource name> API Service Test Suite
-
-Test cases can be run with the following:
-  nosetests -v --with-spec --spec-color
-  coverage report -m
+Account Service API Service Test Suite
 """
 import os
 import logging
 from unittest import TestCase
+from wsgi import app
 from tests.factories import AccountFactory, AddressFactory
 from service.common import status  # HTTP Status Codes
-from service.models import db, Account, init_db
-from service.routes import app
+from service.models import db, Account
 
 DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+    "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/postgres"
 )
 
 BASE_URL = "/accounts"
+
 
 ######################################################################
 #  T E S T   C A S E S
@@ -30,20 +27,21 @@ class TestAccountService(TestCase):
         """Run once before all tests"""
         app.config["TESTING"] = True
         app.config["DEBUG"] = False
+        # Set up the test database
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
-        init_db(app)
+        app.app_context().push()
 
     @classmethod
     def tearDownClass(cls):
         """Runs once before test suite"""
+        db.session.close()
 
     def setUp(self):
         """Runs before each test"""
+        self.client = app.test_client()
         db.session.query(Account).delete()  # clean up the last tests
         db.session.commit()
-
-        self.client = app.test_client()
 
     def tearDown(self):
         """Runs once after each test case"""
