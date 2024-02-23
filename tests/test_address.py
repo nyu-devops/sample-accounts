@@ -137,3 +137,28 @@ class TestAccount(TestCase):
         # Fetch it back again
         account = Account.find(account.id)
         self.assertEqual(len(account.addresses), 0)
+
+    def test_serialize_an_address(self):
+        """It should serialize an Address"""
+        address = AddressFactory()
+        serial_address = address.serialize()
+        self.assertEqual(serial_address["id"], address.id)
+        self.assertEqual(serial_address["account_id"], address.account_id)
+        self.assertEqual(serial_address["name"], address.name)
+        self.assertEqual(serial_address["street"], address.street)
+        self.assertEqual(serial_address["city"], address.city)
+        self.assertEqual(serial_address["state"], address.state)
+        self.assertEqual(serial_address["postal_code"], address.postal_code)
+
+    def test_deserialize_an_address(self):
+        """It should deserialize an Address"""
+        address = AddressFactory()
+        address.create()
+        new_address = Address()
+        new_address.deserialize(address.serialize())
+        self.assertEqual(new_address.account_id, address.account_id)
+        self.assertEqual(new_address.name, address.name)
+        self.assertEqual(new_address.street, address.street)
+        self.assertEqual(new_address.city, address.city)
+        self.assertEqual(new_address.state, address.state)
+        self.assertEqual(new_address.postal_code, address.postal_code)
