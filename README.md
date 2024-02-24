@@ -42,12 +42,12 @@ update_addresses  PUT      /accounts/<account_id>/addresses/<address_id>
 delete_addresses  DELETE   /accounts/<account_id>/addresses/<address_id>
 ```
 
-The test cases have 95% test coverage and can be run with `nosetests`
+The test cases have 95% test coverage and can be run with `pytest`
 
 ## License
 
-Copyright (c) John Rofrano. All rights reserved.
+Copyright (c) 2016, 2024 [John Rofrano](https://www.linkedin.com/in/JohnRofrano/). All rights reserved.
 
 Licensed under the Apache License. See [LICENSE](LICENSE)
 
-This repo is part of the NYU masters class: **CSCI-GA.2820-001 DevOps and Agile Methodologies** conceived, created and taught by *John Rofrano*
+This repository is part of the New York University (NYU) masters class: **CSCI-GA.2820-001 DevOps and Agile Methodologies** created and taught by [John Rofrano](https://cs.nyu.edu/~rofrano/), Adjunct Instructor, NYU Courant Institute, Graduate Division, Computer Science, and NYU Stern School of Business.
