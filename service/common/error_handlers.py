@@ -1,4 +1,5 @@
-# Copyright 2016, 2021 John J. Rofrano. All Rights Reserved.
+######################################################################
+# Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,12 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+######################################################################
+
 """
 Module: error_handlers
 """
 from flask import jsonify
+from flask import current_app as app  # Import Flask application
 from service.models import DataValidationError
-from service import app
 from . import status
 
 
