@@ -250,6 +250,11 @@ class TestAccountService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Make sure location header is set
+        location = resp.headers.get("Location", None)
+        self.assertIsNotNone(location)
+
         data = resp.get_json()
         logging.debug(data)
         self.assertEqual(data["account_id"], account.id)
@@ -258,6 +263,12 @@ class TestAccountService(TestCase):
         self.assertEqual(data["city"], address.city)
         self.assertEqual(data["state"], address.state)
         self.assertEqual(data["postal_code"], address.postal_code)
+
+        # Check that the location header was correct by getting it
+        resp = self.client.get(location, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_address = resp.get_json()
+        self.assertEqual(new_address["name"], address.name, "Address name does not match")
 
     def test_get_address(self):
         """It should Get an address from an account"""
