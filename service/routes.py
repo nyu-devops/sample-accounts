@@ -226,7 +226,14 @@ def create_addresses(account_id):
     # Prepare a message to return
     message = address.serialize()
 
-    return jsonify(message), status.HTTP_201_CREATED
+    # Send the location to GET the new item
+    location_url = url_for(
+        "get_addresses",
+        account_id=account.id,
+        address_id=address.id,
+        _external=True
+    )
+    return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
