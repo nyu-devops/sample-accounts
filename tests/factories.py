@@ -13,17 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ######################################################################
-
+# cspell:ignore userid postalcode
 """
 Test Factory to make fake objects for testing
 """
 from datetime import date
-import factory
+from factory import Factory, SubFactory, Sequence, Faker, post_generation
 from factory.fuzzy import FuzzyChoice, FuzzyDate
 from service.models import Account, Address
 
 
-class AccountFactory(factory.Factory):
+class AccountFactory(Factory):
     """Creates fake Accounts"""
 
     # pylint: disable=too-few-public-methods
@@ -32,15 +32,16 @@ class AccountFactory(factory.Factory):
 
         model = Account
 
-    id = factory.Sequence(lambda n: n)
-    name = factory.Faker("name")
-    email = factory.Faker("email")
-    phone_number = factory.Faker("phone_number")
+    id = Sequence(lambda n: n)
+    name = Faker("name")
+    userid = Sequence(lambda n: f"User{n:04d}")
+    email = Faker("email")
+    phone_number = Faker("phone_number")
     date_joined = FuzzyDate(date(2008, 1, 1))
     # the many side of relationships can be a little wonky in factory boy:
     # https://factoryboy.readthedocs.io/en/latest/recipes.html#simple-many-to-many-relationship
 
-    @factory.post_generation
+    @post_generation
     def addresses(
         self, create, extracted, **kwargs
     ):  # pylint: disable=method-hidden, unused-argument
@@ -52,7 +53,7 @@ class AccountFactory(factory.Factory):
             self.addresses = extracted
 
 
-class AddressFactory(factory.Factory):
+class AddressFactory(Factory):
     """Creates fake Addresses"""
 
     # pylint: disable=too-few-public-methods
@@ -61,11 +62,11 @@ class AddressFactory(factory.Factory):
 
         model = Address
 
-    id = factory.Sequence(lambda n: n)
+    id = Sequence(lambda n: n)
     account_id = None
     name = FuzzyChoice(choices=["home", "work", "other"])
-    street = factory.Faker("street_address")
-    city = factory.Faker("city")
-    state = factory.Faker("state_abbr")
-    postal_code = factory.Faker("postalcode")
-    account = factory.SubFactory(AccountFactory)
+    street = Faker("street_address")
+    city = Faker("city")
+    state = Faker("state_abbr")
+    postal_code = Faker("postalcode")
+    account = SubFactory(AccountFactory)

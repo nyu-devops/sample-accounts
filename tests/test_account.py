@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ######################################################################
-
+# cspell:ignore userid
 """
 Test cases for Account Model
 """
@@ -71,6 +71,7 @@ class TestAccount(TestCase):
         # pylint: disable=unexpected-keyword-arg
         account = Account(
             name=fake_account.name,
+            userid=fake_account.userid,
             email=fake_account.email,
             phone_number=fake_account.phone_number,
             date_joined=fake_account.date_joined,
@@ -78,6 +79,7 @@ class TestAccount(TestCase):
         self.assertIsNotNone(account)
         self.assertEqual(account.id, None)
         self.assertEqual(account.name, fake_account.name)
+        self.assertEqual(account.userid, fake_account.userid)
         self.assertEqual(account.email, fake_account.email)
         self.assertEqual(account.phone_number, fake_account.phone_number)
         self.assertEqual(account.date_joined, fake_account.date_joined)
@@ -109,6 +111,7 @@ class TestAccount(TestCase):
         found_account = Account.find(account.id)
         self.assertEqual(found_account.id, account.id)
         self.assertEqual(found_account.name, account.name)
+        self.assertEqual(found_account.userid, account.userid)
         self.assertEqual(found_account.email, account.email)
         self.assertEqual(found_account.phone_number, account.phone_number)
         self.assertEqual(found_account.date_joined, account.date_joined)
@@ -188,6 +191,7 @@ class TestAccount(TestCase):
         serial_account = account.serialize()
         self.assertEqual(serial_account["id"], account.id)
         self.assertEqual(serial_account["name"], account.name)
+        self.assertEqual(serial_account["userid"], account.userid)
         self.assertEqual(serial_account["email"], account.email)
         self.assertEqual(serial_account["phone_number"], account.phone_number)
         self.assertEqual(serial_account["date_joined"], str(account.date_joined))
@@ -210,6 +214,7 @@ class TestAccount(TestCase):
         new_account = Account()
         new_account.deserialize(serial_account)
         self.assertEqual(new_account.name, account.name)
+        self.assertEqual(new_account.userid, account.userid)
         self.assertEqual(new_account.email, account.email)
         self.assertEqual(new_account.phone_number, account.phone_number)
         self.assertEqual(new_account.date_joined, account.date_joined)
