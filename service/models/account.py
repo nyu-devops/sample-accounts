@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ######################################################################
-
+# cspell: ignore= userid, backref
 """
 Persistent Base class for database CRUD functions
 """
@@ -36,8 +36,9 @@ class Account(db.Model, PersistentBase):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    email = db.Column(db.String(64))
+    name = db.Column(db.String(64), nullable=False)
+    userid = db.Column(db.String(16), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
     phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
     addresses = db.relationship("Address", backref="account", passive_deletes=True)
@@ -50,6 +51,7 @@ class Account(db.Model, PersistentBase):
         account = {
             "id": self.id,
             "name": self.name,
+            "userid": self.userid,
             "email": self.email,
             "phone_number": self.phone_number,
             "date_joined": self.date_joined.isoformat(),
@@ -68,6 +70,7 @@ class Account(db.Model, PersistentBase):
         """
         try:
             self.name = data["name"]
+            self.userid = data["userid"]
             self.email = data["email"]
             self.phone_number = data.get("phone_number")
             self.date_joined = date.fromisoformat(data["date_joined"])

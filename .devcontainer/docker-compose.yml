@@ -13,11 +13,11 @@ services:
       - ..:/app
     command: sleep infinity
     environment:
-      PORT: 8000
+      PORT: 8080
       FLASK_APP: wsgi:app
       FLASK_DEBUG: "True"
-      GUNICORN_BIND: "0.0.0.0:8000"
-      DATABASE_URI: postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres
+      GUNICORN_BIND: "0.0.0.0:8080"
+      DATABASE_URI: postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/accounts
     networks:
       - dev
     depends_on:
@@ -29,6 +29,7 @@ services:
     #   - 5432:5432
     environment:
       POSTGRES_PASSWORD: pgs3cr3t
+      POSTGRES_DB: accounts
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
