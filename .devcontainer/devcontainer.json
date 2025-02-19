@@ -9,9 +9,12 @@
 		"vscode": {
 			"settings": {
 				"cSpell.words": [
+					"wsgi",
 					"sqlalchemy",
 					"psycopg",
-					"pytest"
+					"pytest",
+					"onupdate",
+					"testdb"
 				],				
 				"[python]": {
 					"editor.defaultFormatter": "ms-python.black-formatter",
@@ -34,28 +37,29 @@
 			},
 			"extensions": [
 				"ms-python.python",
-				"ms-python.pylint",
 				"ms-python.vscode-pylance",
+				"ms-python.pylint",
 				"ms-python.flake8",
 				"ms-python.black-formatter",
+				"njpwerner.autodocstring",
+				"wholroyd.jinja",
 				"ms-vscode.makefile-tools",
 				"yzhang.markdown-all-in-one",
-				"hnw.vscode-auto-open-markdown-preview",
 				"davidanson.vscode-markdownlint",
+				"bierner.github-markdown-preview",
+				"hnw.vscode-auto-open-markdown-preview",
 				"bierner.markdown-preview-github-styles",
 				"tamasfe.even-better-toml",
 				"donjayamanne.githistory",
 				"GitHub.vscode-pull-request-github",
-				"github.vscode-github-actions",
 				"hbenl.vscode-test-explorer",
 				"LittleFoxTeam.vscode-python-test-adapter",
-				"njpwerner.autodocstring",
-				"wholroyd.jinja",
 				"redhat.vscode-yaml",
+				"unjinjang.rest-api-client",
 				"ms-azuretools.vscode-docker",
-				"rangav.vscode-thunder-client",
-				"bbenoist.vagrant",
-				"streetsidesoftware.code-spell-checker"
+				"github.vscode-github-actions",
+				"streetsidesoftware.code-spell-checker",				
+				"bbenoist.vagrant"
 			]
 		}
 	}

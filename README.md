@@ -46,7 +46,7 @@ The test cases have 95% test coverage and can be run with `pytest`
 
 ## License
 
-Copyright (c) 2016, 2024 [John Rofrano](https://www.linkedin.com/in/JohnRofrano/). All rights reserved.
+Copyright (c) 2016, 2025 [John Rofrano](https://www.linkedin.com/in/JohnRofrano/). All rights reserved.
 
 Licensed under the Apache License. See [LICENSE](LICENSE)
 

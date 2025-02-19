@@ -14,6 +14,8 @@
 # limitations under the License.
 ######################################################################
 # cspell:ignore userid
+# pylint: disable=duplicate-code
+
 """
 Test cases for Account Model
 """
