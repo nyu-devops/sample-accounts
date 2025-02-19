@@ -40,11 +40,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-      - name: Install dependencies
+      - name: Install Python package dependencies
         run: |
-          python -m pip install poetry
-          poetry config virtualenvs.create false
-          poetry install
+          python -m pip install -U pip pipenv
+          pipenv install --system --dev
 
       - name: Linting
         run: |
