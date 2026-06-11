@@ -1,5 +1,8 @@
-# Image for a NYU Lab development environment
-FROM rofrano/nyu-devops-base:sp25
+##################################################
+# Image for a Python 3 development environment
+##################################################
+# cSpell: disable
+FROM quay.io/rofrano/nyu-devops-base:su26
 
 # Set up the Python development environment
 WORKDIR /app
