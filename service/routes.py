@@ -1,5 +1,5 @@
 ######################################################################
-# Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
+# Copyright 2016, 2026 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ Account Service
 
 This microservice handles the lifecycle of Accounts
 """
+
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
 from service.models import Account, Address
@@ -69,7 +70,7 @@ def list_accounts():
     # Return as an array of dictionaries
     results = [account.serialize() for account in accounts]
 
-    return jsonify(results), status.HTTP_200_OK
+    return results, status.HTTP_200_OK
 
 
 ######################################################################
@@ -92,7 +93,7 @@ def get_accounts(account_id):
             f"Account with id '{account_id}' could not be found.",
         )
 
-    return jsonify(account.serialize()), status.HTTP_200_OK
+    return account.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -116,7 +117,7 @@ def create_accounts():
     message = account.serialize()
     location_url = url_for("get_accounts", account_id=account.id, _external=True)
 
-    return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    return message, status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
@@ -144,7 +145,7 @@ def update_accounts(account_id):
     account.id = account_id
     account.update()
 
-    return jsonify(account.serialize()), status.HTTP_200_OK
+    return account.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -191,7 +192,7 @@ def list_addresses(account_id):
     # Get the addresses for the account
     results = [address.serialize() for address in account.addresses]
 
-    return jsonify(results), status.HTTP_200_OK
+    return results, status.HTTP_200_OK
 
 
 ######################################################################
@@ -228,12 +229,9 @@ def create_addresses(account_id):
 
     # Send the location to GET the new item
     location_url = url_for(
-        "get_addresses",
-        account_id=account.id,
-        address_id=address.id,
-        _external=True
+        "get_addresses", account_id=account.id, address_id=address.id, _external=True
     )
-    return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    return message, status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
@@ -258,7 +256,7 @@ def get_addresses(account_id, address_id):
             f"Account with id '{address_id}' could not be found.",
         )
 
-    return jsonify(address.serialize()), status.HTTP_200_OK
+    return address.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -289,7 +287,7 @@ def update_addresses(account_id, address_id):
     address.id = address_id
     address.update()
 
-    return jsonify(address.serialize()), status.HTTP_200_OK
+    return address.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
