@@ -36,8 +36,8 @@ BASE_URL = "/accounts"
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
-class TestAccountService(TestCase):
-    """Account Service Tests"""
+class BaseTestCase(TestCase):
+    """Base Test Case Setup"""
 
     @classmethod
     def setUpClass(cls):
@@ -84,9 +84,14 @@ class TestAccountService(TestCase):
             accounts.append(account)
         return accounts
 
-    ######################################################################
-    #  A C C O U N T   T E S T   C A S E S
-    ######################################################################
+
+######################################################################
+#  A C C O U N T   T E S T   C A S E S
+######################################################################
+
+
+class TestAccountService(BaseTestCase):
+    """Account Service Tests"""
 
     def test_index(self):
         """It should call the Home Page"""
@@ -213,9 +218,12 @@ class TestAccountService(TestCase):
         resp = self.client.put(BASE_URL, json={"not": "today"})
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    ######################################################################
-    #  A D D R E S S   T E S T   C A S E S
-    ######################################################################
+
+######################################################################
+#  A D D R E S S   T E S T   C A S E S
+######################################################################
+class TestAddressService(BaseTestCase):
+    """Address Service Tests"""
 
     def test_get_address_list(self):
         """It should Get a list of Addresses"""
