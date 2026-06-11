@@ -88,5 +88,3 @@ class Address(db.Model, PersistentBase):
                 "Invalid Address: body of request contained bad or no data "
                 + str(error)
             ) from error
-
-        return self
