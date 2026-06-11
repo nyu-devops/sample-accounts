@@ -46,7 +46,7 @@ class Account(db.Model, PersistentBase):
     def __repr__(self):
         return f"<Account {self.name} id=[{self.id}]>"
 
-    def serialize(self):
+    def serialize(self) -> dict:
         """Converts an Account into a dictionary"""
         account = {
             "id": self.id,
@@ -61,7 +61,7 @@ class Account(db.Model, PersistentBase):
             account["addresses"].append(address.serialize())
         return account
 
-    def deserialize(self, data):
+    def deserialize(self, data: dict) -> None:
         """
         Populates an Account from a dictionary
 
@@ -91,8 +91,6 @@ class Account(db.Model, PersistentBase):
                 "Invalid Account: body of request contained bad or no data "
                 + str(error)
             ) from error
-
-        return self
 
     @classmethod
     def find_by_name(cls, name):

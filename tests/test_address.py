@@ -1,5 +1,5 @@
 ######################################################################
-# Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
+# Copyright 2016, 2026 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -94,9 +94,11 @@ class TestAccount(TestCase):
         accounts = Account.all()
         self.assertEqual(accounts, [])
 
+        # Create an account from which to create an address
         account = AccountFactory()
         address = AddressFactory(account=account)
         account.create()
+
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(account.id)
         accounts = Account.all()

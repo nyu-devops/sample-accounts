@@ -1,5 +1,5 @@
 ######################################################################
-# Copyright 2016, 2024 John J. Rofrano. All Rights Reserved.
+# Copyright 2016, 2026 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,6 +69,7 @@ class TestAccount(TestCase):
 
     def test_create_an_account(self):
         """It should Create an Account and assert that it exists"""
+        # Use the factory to generate data but test using manual parameters
         fake_account = AccountFactory()
         # pylint: disable=unexpected-keyword-arg
         account = Account(
